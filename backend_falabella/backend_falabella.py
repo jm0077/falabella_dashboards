@@ -61,28 +61,20 @@ def get_consumption_data():
     # Calcular la fecha de hace 12 meses
     twelve_months_ago = datetime.now() - timedelta(days=365)
 
-    # Obtener datos de los últimos 12 meses
+    # Obtener los pagos totales de los últimos 12 meses de la tabla info_general
     results = session.query(
-        func.date_format(Movimiento.fecha_transaccion, '%Y-%m').label('mes'),
-        func.sum(Movimiento.monto).label('monto_consumido'),
-        func.sum(Movimiento.total - Movimiento.monto).label('monto_en_cuotas'),
-        func.sum(InfoGeneral.pago_total_mes).label('pago_total_mes')
+        func.date_format(InfoGeneral.ultimo_dia_pago, '%Y-%m').label('mes'),
+        InfoGeneral.pago_total_mes
     ).filter(
-        Movimiento.fecha_transaccion >= twelve_months_ago
-    ).join(
-        InfoGeneral, Movimiento.info_general_id == InfoGeneral.id
-    ).group_by(
-        func.date_format(Movimiento.fecha_transaccion, '%Y-%m')
+        InfoGeneral.ultimo_dia_pago >= twelve_months_ago
     ).order_by(
-        func.date_format(Movimiento.fecha_transaccion, '%Y-%m').asc()
+        InfoGeneral.ultimo_dia_pago.asc()
     ).all()
 
     # Formatear respuesta
     response = [
         {
             'mes': r.mes,
-            'monto_consumido': r.monto_consumido,
-            'monto_en_cuotas': r.monto_en_cuotas,
             'pago_total_mes': r.pago_total_mes
         }
         for r in results

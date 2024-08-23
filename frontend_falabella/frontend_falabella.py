@@ -45,14 +45,12 @@ def update_consumption_graph(_):
     # Crear la figura del gráfico de líneas
     fig = {
         'data': [
-            {'x': df['mes'], 'y': df['monto_consumido'], 'type': 'line', 'name': 'Monto Consumido'},
-            {'x': df['mes'], 'y': df['monto_en_cuotas'], 'type': 'line', 'name': 'Monto en Cuotas'},
             {'x': df['mes'], 'y': df['pago_total_mes'], 'type': 'line', 'name': 'Pago Total Mes'},
         ],
         'layout': {
-            'title': 'Consumo Mensual',
+            'title': 'Pago Total Mensual',
             'xaxis': {'title': 'Mes'},
-            'yaxis': {'title': 'Monto'},
+            'yaxis': {'title': 'Pago Total Mes'},
         }
     }
     return fig
