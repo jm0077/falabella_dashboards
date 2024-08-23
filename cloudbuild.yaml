@@ -1,0 +1,34 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+# Paso 1: Construir el microservicio "backend-falabella"
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/custom-curve-431820-e9/backend-falabella-app', '.']
+  dir: './backend_falabella'
+
+# Paso 2: Desplegar el microservicio "backend-falabella"
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'backend-falabella-app-service', 
+         '--image', 'gcr.io/custom-curve-431820-e9/backend-falabella-app', 
+         '--add-cloudsql-instances', 'custom-curve-431820-e9:southamerica-west1:my-mysql-instance', 
+         '--platform', 'managed', 
+         '--region', 'southamerica-west1', 
+         '--allow-unauthenticated']
+
+# Paso 3: Construir el microservicio "frontend-falabella"
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/custom-curve-431820-e9/frontend-falabella-app', '.']
+  dir: './frontend_falabella'
+
+# Paso 4: Desplegar el microservicio "frontend-falabella"
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'frontend-falabella-app-service', 
+         '--image', 'gcr.io/custom-curve-431820-e9/frontend-falabella-app', 
+         '--platform', 'managed', 
+         '--region', 'southamerica-west1', 
+         '--allow-unauthenticated']
+
+images:
+- 'gcr.io/custom-curve-431820-e9/backend-falabella-app'
+- 'gcr.io/custom-curve-431820-e9/frontend-falabella-app'
