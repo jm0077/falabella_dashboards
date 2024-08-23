@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, func
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, func, desc
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime, timedelta
 
@@ -65,9 +65,12 @@ def get_consumption_data():
     results = session.query(
         func.date_format(Movimiento.fecha_transaccion, '%Y-%m').label('mes'),
         func.sum(Movimiento.monto).label('monto_consumido'),
-        func.sum(Movimiento.total - Movimiento.monto).label('monto_en_cuotas')
+        func.sum(Movimiento.total - Movimiento.monto).label('monto_en_cuotas'),
+        func.sum(InfoGeneral.pago_total_mes).label('pago_total_mes')
     ).filter(
         Movimiento.fecha_transaccion >= twelve_months_ago
+    ).join(
+        InfoGeneral, Movimiento.info_general_id == InfoGeneral.id
     ).group_by(
         func.date_format(Movimiento.fecha_transaccion, '%Y-%m')
     ).order_by(
@@ -75,8 +78,52 @@ def get_consumption_data():
     ).all()
 
     # Formatear respuesta
-    response = [{'mes': r.mes, 'monto_consumido': r.monto_consumido, 'monto_en_cuotas': r.monto_en_cuotas} for r in results]
+    response = [
+        {
+            'mes': r.mes,
+            'monto_consumido': r.monto_consumido,
+            'monto_en_cuotas': r.monto_en_cuotas,
+            'pago_total_mes': r.pago_total_mes
+        }
+        for r in results
+    ]
     
+    return jsonify(response)
+
+@app.route('/api/latest-month-data', methods=['GET'])
+def get_latest_month_data():
+    # Obtener la última fecha de transacción registrada
+    latest_transaction_date = session.query(func.max(Movimiento.fecha_transaccion)).scalar()
+
+    # Obtener la información general para el último mes
+    info_general = session.query(InfoGeneral).join(Movimiento).filter(
+        Movimiento.fecha_transaccion == latest_transaction_date
+    ).first()
+
+    # Obtener los movimientos del último mes
+    movements = session.query(Movimiento).filter(
+        Movimiento.fecha_transaccion == latest_transaction_date
+    ).all()
+
+    # Formatear la respuesta
+    response = {
+        'pago_total_mes': info_general.pago_total_mes,
+        'movimientos': [
+            {
+                'fecha_transaccion': m.fecha_transaccion,
+                'fecha_proceso': m.fecha_proceso,
+                'detalle': m.detalle,
+                'monto': m.monto,
+                'cuota_cargada': m.cuota_cargada,
+                'porcentaje_tea': m.porcentaje_tea,
+                'capital': m.capital,
+                'interes': m.interes,
+                'total': m.total
+            }
+            for m in movements
+        ]
+    }
+
     return jsonify(response)
 
 if __name__ == '__main__':
