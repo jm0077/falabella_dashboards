@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, func, desc
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, func
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime, timedelta
 
@@ -80,42 +80,6 @@ def get_consumption_data():
         for r in results
     ]
     
-    return jsonify(response)
-
-@app.route('/api/latest-month-data', methods=['GET'])
-def get_latest_month_data():
-    # Obtener la última fecha de transacción registrada
-    latest_transaction_date = session.query(func.max(Movimiento.fecha_transaccion)).scalar()
-
-    # Obtener la información general para el último mes
-    info_general = session.query(InfoGeneral).join(Movimiento).filter(
-        Movimiento.fecha_transaccion == latest_transaction_date
-    ).first()
-
-    # Obtener los movimientos del último mes
-    movements = session.query(Movimiento).filter(
-        Movimiento.fecha_transaccion == latest_transaction_date
-    ).all()
-
-    # Formatear la respuesta
-    response = {
-        'pago_total_mes': info_general.pago_total_mes,
-        'movimientos': [
-            {
-                'fecha_transaccion': m.fecha_transaccion,
-                'fecha_proceso': m.fecha_proceso,
-                'detalle': m.detalle,
-                'monto': m.monto,
-                'cuota_cargada': m.cuota_cargada,
-                'porcentaje_tea': m.porcentaje_tea,
-                'capital': m.capital,
-                'interes': m.interes,
-                'total': m.total
-            }
-            for m in movements
-        ]
-    }
-
     return jsonify(response)
 
 if __name__ == '__main__':
