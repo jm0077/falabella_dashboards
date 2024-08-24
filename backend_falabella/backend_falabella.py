@@ -58,16 +58,27 @@ class Movimiento(Base):
 
 @app.route('/api/consumption-data', methods=['GET'])
 def get_consumption_data():
-    # Obtener los últimos 12 periodos
+    # Calcular la fecha de hace 12 meses
+    twelve_months_ago = datetime.now() - timedelta(days=365)
+
+    # Obtener los pagos totales de los últimos 12 periodos de la tabla info_general
     results = session.query(
         InfoGeneral.periodo_facturacion.label('periodo'),
-        InfoGeneral.pago_total_mes.label('pago_total_mes')
+        InfoGeneral.pago_total_mes
+    ).filter(
+        InfoGeneral.ultimo_dia_pago >= twelve_months_ago
     ).order_by(
-        InfoGeneral.periodo_facturacion.desc()
-    ).limit(12).all()
+        InfoGeneral.ultimo_dia_pago.asc()
+    ).all()
 
     # Formatear respuesta
-    response = [{'periodo': r.periodo, 'pago_total_mes': r.pago_total_mes} for r in results]
+    response = [
+        {
+            'periodo': r.periodo,
+            'pago_total_mes': r.pago_total_mes
+        }
+        for r in results
+    ]
     
     return jsonify(response)
 
