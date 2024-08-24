@@ -61,9 +61,9 @@ def get_consumption_data():
     # Calcular la fecha de hace 12 meses
     twelve_months_ago = datetime.now() - timedelta(days=365)
 
-    # Obtener los pagos totales de los últimos 12 meses de la tabla info_general
+    # Obtener los pagos totales de los últimos 12 periodos de la tabla info_general
     results = session.query(
-        func.date_format(InfoGeneral.ultimo_dia_pago, '%Y-%m').label('mes'),
+        InfoGeneral.periodo_facturacion.label('periodo'),
         InfoGeneral.pago_total_mes
     ).filter(
         InfoGeneral.ultimo_dia_pago >= twelve_months_ago
@@ -74,7 +74,7 @@ def get_consumption_data():
     # Formatear respuesta
     response = [
         {
-            'mes': r.mes,
+            'periodo': r.periodo,
             'pago_total_mes': r.pago_total_mes
         }
         for r in results
