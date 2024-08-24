@@ -58,28 +58,63 @@ class Movimiento(Base):
 
 @app.route('/api/consumption-data', methods=['GET'])
 def get_consumption_data():
-    # Calcular la fecha de hace 12 meses
-    twelve_months_ago = datetime.now() - timedelta(days=365)
-
-    # Obtener los pagos totales de los últimos 12 periodos de la tabla info_general
+    # Obtener los últimos 12 periodos
     results = session.query(
         InfoGeneral.periodo_facturacion.label('periodo'),
-        InfoGeneral.pago_total_mes
-    ).filter(
-        InfoGeneral.ultimo_dia_pago >= twelve_months_ago
+        InfoGeneral.pago_total_mes.label('pago_total_mes')
     ).order_by(
-        InfoGeneral.ultimo_dia_pago.asc()
+        InfoGeneral.periodo_facturacion.desc()
+    ).limit(12).all()
+
+    # Formatear respuesta
+    response = [{'periodo': r.periodo, 'pago_total_mes': r.pago_total_mes} for r in results]
+    
+    return jsonify(response)
+
+@app.route('/api/latest-period-data', methods=['GET'])
+def get_latest_period_data():
+    # Obtener el último período de facturación
+    latest_period = session.query(
+        InfoGeneral.periodo_facturacion,
+        InfoGeneral.pago_total_mes
+    ).order_by(
+        InfoGeneral.periodo_facturacion.desc()
+    ).first()
+
+    # Obtener los movimientos asociados a ese período
+    movements = session.query(
+        Movimiento.fecha_transaccion,
+        Movimiento.fecha_proceso,
+        Movimiento.detalle,
+        Movimiento.monto,
+        Movimiento.cuota_cargada,
+        Movimiento.porcentaje_tea,
+        Movimiento.capital,
+        Movimiento.interes,
+        Movimiento.total
+    ).join(InfoGeneral).filter(
+        InfoGeneral.periodo_facturacion == latest_period.periodo_facturacion
     ).all()
 
     # Formatear respuesta
-    response = [
-        {
-            'periodo': r.periodo,
-            'pago_total_mes': r.pago_total_mes
-        }
-        for r in results
-    ]
-    
+    response = {
+        'periodo': latest_period.periodo_facturacion,
+        'pago_total_mes': latest_period.pago_total_mes,
+        'movimientos': [
+            {
+                'fecha_transaccion': m.fecha_transaccion,
+                'fecha_proceso': m.fecha_proceso,
+                'detalle': m.detalle,
+                'monto': m.monto,
+                'cuota_cargada': m.cuota_cargada,
+                'porcentaje_tea': m.porcentaje_tea,
+                'capital': m.capital,
+                'interes': m.interes,
+                'total': m.total
+            } for m in movements
+        ]
+    }
+
     return jsonify(response)
 
 if __name__ == '__main__':
