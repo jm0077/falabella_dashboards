@@ -1,1 +1,1 @@
-"# Falabella Dashboards v1.1" 
+"# Falabella Dashboards v1.2" 
