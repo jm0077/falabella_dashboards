@@ -98,5 +98,6 @@ def update_consumption_graph(_):
 def index():
     return render_template('index.html')
 
+# Ejecutar la aplicación en el puerto 8080
 if __name__ == '__main__':
-    server.run
+    server.run(host='0.0.0.0', port=8080)
