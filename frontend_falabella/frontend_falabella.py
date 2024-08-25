@@ -15,17 +15,23 @@ app = Dash(__name__, server=server, routes_pathname_prefix='/dashboard/', extern
 # Definir el layout de la aplicación Dash
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H1("Pago Total del Último Periodo:", className="text-center"), width=6),
-        dbc.Col(html.H2(id='pago-total-mes', className="text-center text-primary"), width=6)
-    ]),
+        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right"), width=6),
+        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary"), width=6)
+    ], align='center'),  # Alineación vertical centrada
     dbc.Row([
         dbc.Col(html.H2("Movimientos del último periodo", className="text-center"), width=12),
     ]),
     dbc.Row([
-        dbc.Col(dash_table.DataTable(id='movimientos-table'), width=12),
+        dbc.Col(dash_table.DataTable(id='movimientos-table', style_cell_conditional=[
+            {
+                'if': {'column_id': 'Total (S/)'},
+                'fontWeight': 'bold',
+                'color': 'red'  # Resaltar el total en negrita y con color rojo
+            }
+        ], style_as_list_view=True), width=12),
     ]),
     dbc.Row([
-        dbc.Col(html.H1("Facturación de los últimos 12 periodos", className="text-center"))
+        dbc.Col(html.H2("Facturación de los últimos 12 periodos", className="text-center"))
     ]),
     dbc.Row([
         dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
@@ -50,8 +56,22 @@ def update_latest_period(_):
     # Movimientos del último periodo
     movimientos = data['movimientos']
 
-    # Definir las columnas de la tabla
-    columns = [{"name": col, "id": col} for col in movimientos[0].keys()]
+    # Reordenar y etiquetar las columnas según lo solicitado
+    for mov in movimientos:
+        mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
+        mov['fecha_proceso'] = pd.to_datetime(mov['fecha_proceso']).strftime('%Y-%m-%d')
+    
+    columns = [
+        {"name": "Fecha de transacción", "id": "fecha_transaccion"},
+        {"name": "Fecha de proceso", "id": "fecha_proceso"},
+        {"name": "Detalle", "id": "detalle"},
+        {"name": "Monto (S/)", "id": "monto"},
+        {"name": "Cuota cargada", "id": "cuota_cargada"},
+        {"name": "% TEA", "id": "porcentaje_tea"},
+        {"name": "Capital (S/)", "id": "capital"},
+        {"name": "Interés (S/)", "id": "interes"},
+        {"name": "Total (S/)", "id": "total"}
+    ]
 
     return pago_total_mes, movimientos, columns
 
@@ -83,7 +103,7 @@ def update_consumption_graph(_):
 
     # Configuración de los ejes
     fig.update_layout(
-        title='Facturación de los últimos 12 periodos',
+        #title='Facturación de los últimos 12 periodos',
         xaxis_title='Periodo',
         yaxis_title='Pago Total Mes (S/.)',
         xaxis=dict(showline=True, showgrid=False, showticklabels=True, linecolor='rgb(204, 204, 204)', linewidth=2, ticks='outside'),
