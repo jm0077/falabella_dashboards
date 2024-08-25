@@ -9,8 +9,18 @@ import plotly.graph_objs as go
 # Configurar Flask
 server = Flask(__name__)
 
+# Ruta principal para renderizar la página HTML
+@server.route('/')
+def index():
+    return render_template('index.html')
+
 # Configurar Dash dentro de Flask
-app = Dash(__name__, server=server, routes_pathname_prefix='/dashboard/', external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(
+    __name__, 
+    server=server, 
+    routes_pathname_prefix='/dashboard/',  # La app de Dash ahora está en /dashboard/
+    external_stylesheets=[dbc.themes.BOOTSTRAP]
+)
 
 # Definir el layout de la aplicación Dash
 app.layout = dbc.Container([
@@ -101,7 +111,7 @@ def update_graph(_):
         ])
 
         figure.update_layout(
-            title="Consumo por Periodo de Facturación",
+            #title="Consumo por Periodo de Facturación",
             xaxis_title="Periodo de Facturación",
             yaxis_title="Pago Total (S/)"
         )
@@ -111,6 +121,6 @@ def update_graph(_):
     except requests.exceptions.RequestException as e:
         return go.Figure()
 
-# Correr la aplicación en modo debug
+# Correr la aplicación en el puerto 8080
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(host='0.0.0.0', port=8080, debug=True)
