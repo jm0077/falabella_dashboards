@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, func
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session, relationship
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -15,8 +15,8 @@ cloud_sql_connection_name = 'custom-curve-431820-e9:southamerica-west1:my-mysql-
 db_url = f"mysql+pymysql://{db_user}:{db_pass}@/{db_name}?unix_socket=/cloudsql/{cloud_sql_connection_name}"
 
 engine = create_engine(db_url)
-Session = sessionmaker(bind=engine)
-session = Session()
+SessionFactory = sessionmaker(bind=engine)
+Session = scoped_session(SessionFactory)  # Utilizar scoped_session para manejar sesiones de forma segura
 
 # Base de clases para los modelos
 Base = declarative_base()
@@ -58,74 +58,85 @@ class Movimiento(Base):
 
 @app.route('/api/consumption-data', methods=['GET'])
 def get_consumption_data():
-    # Calcular la fecha de hace 12 meses
-    twelve_months_ago = datetime.now() - timedelta(days=365)
+    session = Session()  # Crear una nueva sesión para la solicitud actual
+    try:
+        # Calcular la fecha de hace 12 meses
+        twelve_months_ago = datetime.now() - timedelta(days=365)
 
-    # Obtener los pagos totales de los últimos 12 periodos de la tabla info_general
-    results = session.query(
-        InfoGeneral.periodo_facturacion.label('periodo'),
-        InfoGeneral.pago_total_mes
-    ).filter(
-        InfoGeneral.ultimo_dia_pago >= twelve_months_ago
-    ).order_by(
-        InfoGeneral.ultimo_dia_pago.asc()
-    ).all()
+        # Obtener los pagos totales de los últimos 12 periodos de la tabla info_general
+        results = session.query(
+            InfoGeneral.periodo_facturacion.label('periodo'),
+            InfoGeneral.pago_total_mes
+        ).filter(
+            InfoGeneral.ultimo_dia_pago >= twelve_months_ago
+        ).order_by(
+            InfoGeneral.ultimo_dia_pago.asc()
+        ).all()
 
-    # Formatear respuesta
-    response = [
-        {
-            'periodo': r.periodo,
-            'pago_total_mes': r.pago_total_mes
-        }
-        for r in results
-    ]
-    
-    return jsonify(response)
+        # Formatear respuesta
+        response = [
+            {
+                'periodo': r.periodo,
+                'pago_total_mes': r.pago_total_mes
+            }
+            for r in results
+        ]
+
+        return jsonify(response)
+    finally:
+        session.close()  # Asegurarse de cerrar la sesión al finalizar
 
 @app.route('/api/latest-period-data', methods=['GET'])
 def get_latest_period_data():
-    # Obtener el último período de facturación basado en la fecha de pago (último día de pago)
-    latest_period = session.query(
-        InfoGeneral
-    ).order_by(
-        InfoGeneral.ultimo_dia_pago.desc()
-    ).first()
+    session = Session()  # Crear una nueva sesión para la solicitud actual
+    try:
+        # Obtener el último período de facturación basado en la fecha de pago (último día de pago)
+        latest_period = session.query(
+            InfoGeneral
+        ).order_by(
+            InfoGeneral.ultimo_dia_pago.desc()
+        ).first()
 
-    # Obtener los movimientos asociados a ese período
-    movements = session.query(
-        Movimiento.fecha_transaccion,
-        Movimiento.fecha_proceso,
-        Movimiento.detalle,
-        Movimiento.monto,
-        Movimiento.cuota_cargada,
-        Movimiento.porcentaje_tea,
-        Movimiento.capital,
-        Movimiento.interes,
-        Movimiento.total
-    ).filter(
-        Movimiento.info_general_id == latest_period.id
-    ).all()
+        if latest_period is None:
+            return jsonify({'error': 'No se encontró información del último período'}), 404
 
-    # Formatear respuesta
-    response = {
-        'periodo': latest_period.periodo_facturacion,
-        'pago_total_mes': latest_period.pago_total_mes,
-        'movimientos': [
-            {
-                'fecha_transaccion': m.fecha_transaccion,
-                'fecha_proceso': m.fecha_proceso,
-                'detalle': m.detalle,
-                'monto': m.monto,
-                'cuota_cargada': m.cuota_cargada,
-                'porcentaje_tea': m.porcentaje_tea,
-                'capital': m.capital,
-                'interes': m.interes,
-                'total': m.total
-            } for m in movements
-        ]
-    }
+        # Obtener los movimientos asociados a ese período
+        movements = session.query(
+            Movimiento.fecha_transaccion,
+            Movimiento.fecha_proceso,
+            Movimiento.detalle,
+            Movimiento.monto,
+            Movimiento.cuota_cargada,
+            Movimiento.porcentaje_tea,
+            Movimiento.capital,
+            Movimiento.interes,
+            Movimiento.total
+        ).filter(
+            Movimiento.info_general_id == latest_period.id
+        ).all()
 
-    return jsonify(response)
+        # Formatear respuesta
+        response = {
+            'periodo': latest_period.periodo_facturacion,
+            'pago_total_mes': latest_period.pago_total_mes,
+            'movimientos': [
+                {
+                    'fecha_transaccion': m.fecha_transaccion,
+                    'fecha_proceso': m.fecha_proceso,
+                    'detalle': m.detalle,
+                    'monto': m.monto,
+                    'cuota_cargada': m.cuota_cargada,
+                    'porcentaje_tea': m.porcentaje_tea,
+                    'capital': m.capital,
+                    'interes': m.interes,
+                    'total': m.total
+                } for m in movements
+            ]
+        }
+
+        return jsonify(response)
+    finally:
+        session.close()  # Asegurarse de cerrar la sesión al finalizar
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
