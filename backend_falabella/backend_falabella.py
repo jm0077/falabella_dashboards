@@ -21,7 +21,7 @@ session = Session()
 # Base de clases para los modelos
 Base = declarative_base()
 
-# Modelo completo InfoGeneral
+# Modelo InfoGeneral
 class InfoGeneral(Base):
     __tablename__ = 'info_general'
     id = Column(Integer, primary_key=True)
@@ -41,7 +41,7 @@ class InfoGeneral(Base):
     linea_disponible = Column(Float)
     movimientos = relationship('Movimiento', backref='info_general')
 
-# Modelo completo Movimiento
+# Modelo Movimiento
 class Movimiento(Base):
     __tablename__ = 'info_movimientos'
     id = Column(Integer, primary_key=True)
@@ -84,12 +84,11 @@ def get_consumption_data():
 
 @app.route('/api/latest-period-data', methods=['GET'])
 def get_latest_period_data():
-    # Obtener el último período de facturación
+    # Obtener el último período de facturación basado en la fecha de pago (último día de pago)
     latest_period = session.query(
-        InfoGeneral.periodo_facturacion,
-        InfoGeneral.pago_total_mes
+        InfoGeneral
     ).order_by(
-        InfoGeneral.periodo_facturacion.desc()
+        InfoGeneral.ultimo_dia_pago.desc()
     ).first()
 
     # Obtener los movimientos asociados a ese período
@@ -103,8 +102,8 @@ def get_latest_period_data():
         Movimiento.capital,
         Movimiento.interes,
         Movimiento.total
-    ).join(InfoGeneral).filter(
-        InfoGeneral.periodo_facturacion == latest_period.periodo_facturacion
+    ).filter(
+        Movimiento.info_general_id == latest_period.id
     ).all()
 
     # Formatear respuesta

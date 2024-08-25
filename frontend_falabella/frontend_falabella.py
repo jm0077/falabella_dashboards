@@ -15,16 +15,17 @@ app = Dash(__name__, server=server, routes_pathname_prefix='/dashboard/', extern
 # Definir el layout de la aplicación Dash
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H1("Pago Total del Último Periodo"), className="text-center")
+        dbc.Col(html.H1("Pago Total del Último Periodo:", className="text-center"), width=6),
+        dbc.Col(html.H2(id='pago-total-mes', className="text-center text-primary"), width=6)
     ]),
     dbc.Row([
-        dbc.Col(html.H2(id='pago-total-mes', className="text-center text-primary"), width=12),
+        dbc.Col(html.H2("Movimientos del último periodo", className="text-center"), width=12),
     ]),
     dbc.Row([
         dbc.Col(dash_table.DataTable(id='movimientos-table'), width=12),
     ]),
     dbc.Row([
-        dbc.Col(html.H1("Pago Total de los últimos 12 periodos"), className="text-center")
+        dbc.Col(html.H1("Facturación de los últimos 12 periodos", className="text-center"))
     ]),
     dbc.Row([
         dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
@@ -82,7 +83,7 @@ def update_consumption_graph(_):
 
     # Configuración de los ejes
     fig.update_layout(
-        title='Pago Total de los últimos 12 periodos',
+        title='Facturación de los últimos 12 periodos',
         xaxis_title='Periodo',
         yaxis_title='Pago Total Mes (S/.)',
         xaxis=dict(showline=True, showgrid=False, showticklabels=True, linecolor='rgb(204, 204, 204)', linewidth=2, ticks='outside'),
@@ -98,4 +99,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    server.run(host='0.0.0.0', port=8080)
+    server.run
