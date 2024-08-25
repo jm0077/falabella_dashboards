@@ -18,30 +18,45 @@ def index():
 app = Dash(
     __name__, 
     server=server, 
-    routes_pathname_prefix='/dashboard/',  # La app de Dash ahora está en /dashboard/
-    external_stylesheets=[dbc.themes.BOOTSTRAP]
+    routes_pathname_prefix='/dashboard/',  
+    external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap']
 )
 
-# Definir el layout de la aplicación Dash
+# Definir el layout de la aplicación Dash con estilos mejorados
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right"), width=6),
-        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary"), width=6)
-    ], align='center'),  # Alineación vertical centrada
+        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
+        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
+    ], align='center'), 
     dbc.Row([
-        dbc.Col(html.H2("Movimientos del último periodo", className="text-center"), width=12),
+        dbc.Col(html.H2("Movimientos del último periodo", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=12),
     ]),
     dbc.Row([
-        dbc.Col(dash_table.DataTable(id='movimientos-table', style_cell_conditional=[
-            {
-                'if': {'column_id': 'Total (S/)'},
-                'fontWeight': 'bold',
-                'color': 'red'  # Resaltar el total en negrita y con color rojo
-            }
-        ], style_as_list_view=True), width=12),
+        dbc.Col(dash_table.DataTable(
+            id='movimientos-table',
+            style_cell={
+                'font-family': 'Montserrat',
+                'font-weight': '400',
+                'textAlign': 'center',
+                'padding': '5px',
+            },
+            style_header={
+                'fontWeight': '600',
+                'backgroundColor': 'rgb(230, 230, 230)',
+                'color': 'black'
+            },
+            style_cell_conditional=[
+                {
+                    'if': {'column_id': 'Total (S/)'},
+                    'fontWeight': 'bold',
+                    'color': 'red'
+                }
+            ],
+            style_as_list_view=True
+        ), width=12),
     ]),
     dbc.Row([
-        dbc.Col(html.H2("Facturación de los últimos 12 periodos", className="text-center"))
+        dbc.Col(html.H2("Facturación de los últimos 12 periodos", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600'}))
     ]),
     dbc.Row([
         dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
@@ -57,18 +72,13 @@ app.layout = dbc.Container([
 )
 def update_latest_period(_):
     try:
-        # Realizar solicitud al backend
         response = requests.get("https://backend-falabella-app-service-alhjlx25pa-tl.a.run.app/api/latest-period-data")
         response.raise_for_status()
         data = response.json()
 
-        # Pago total del último periodo
         pago_total_mes = f"S/. {data['pago_total_mes']:.2f}"
-
-        # Movimientos del último periodo
         movimientos = data['movimientos']
 
-        # Reordenar y etiquetar las columnas según lo solicitado
         for mov in movimientos:
             mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
             mov['fecha_proceso'] = pd.to_datetime(mov['fecha_proceso']).strftime('%Y-%m-%d')
@@ -97,23 +107,24 @@ def update_latest_period(_):
 )
 def update_graph(_):
     try:
-        # Realizar solicitud al backend
         response = requests.get("https://backend-falabella-app-service-alhjlx25pa-tl.a.run.app/api/consumption-data")
         response.raise_for_status()
         data = response.json()
 
-        # Crear un DataFrame a partir de la respuesta
         df = pd.DataFrame(data)
 
-        # Generar el gráfico de barras
         figure = go.Figure(data=[
-            go.Bar(x=df['periodo'], y=df['pago_total_mes'], marker_color='blue')
+            go.Bar(x=df['periodo'], y=df['pago_total_mes'], marker_color='rgb(58, 123, 213)')
         ])
 
         figure.update_layout(
-            #title="Consumo por Periodo de Facturación",
             xaxis_title="Periodo de Facturación",
-            yaxis_title="Pago Total (S/)"
+            yaxis_title="Pago Total (S/)",
+            font=dict(family="Montserrat", size=14),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            margin=dict(l=40, r=40, t=40, b=40),
+            height=400
         )
 
         return figure
@@ -121,6 +132,5 @@ def update_graph(_):
     except requests.exceptions.RequestException as e:
         return go.Figure()
 
-# Correr la aplicación en el puerto 8080
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=8080, debug=True)
