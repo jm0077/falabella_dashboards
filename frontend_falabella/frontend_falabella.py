@@ -25,55 +25,57 @@ app = Dash(
 # Definir el layout de la aplicación Dash con estilos mejorados
 app.layout = dbc.Container([
     dbc.Row([
-        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
-        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
-    ], align='center'),
+        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
+        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
+    ], align='center', className="mb-4"),
     dbc.Row([
-        dbc.Col(html.H2("Pago Mínimo del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
-        dbc.Col(html.H2(id='pago-minimo-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
-    ], align='center'),
+        dbc.Col(html.H2("Pago Mínimo del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
+        dbc.Col(html.H2(id='pago-minimo-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
+    ], align='center', className="mb-4"),
     dbc.Row([
-        dbc.Col(html.H2("Fecha Máxima de Pago:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
-        dbc.Col(html.H2(id='fecha-maxima-pago', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
-    ], align='center'),
+        dbc.Col(html.H2("Fecha Máxima de Pago:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
+        dbc.Col(html.H2(id='fecha-maxima-pago', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
+    ], align='center', className="mb-4"),
     dbc.Row([
-        dbc.Col(html.H2("Línea Disponible:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
-        dbc.Col(html.H2(id='linea-disponible', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
-    ], align='center'),
+        dbc.Col(html.H2("Línea Disponible:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
+        dbc.Col(html.H2(id='linea-disponible', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
+    ], align='center', className="mb-4"),
     dbc.Row([
-        dbc.Col(html.H2("Movimientos del último periodo", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=12),
-    ]),
+        dbc.Col(html.H2("Movimientos del Último Periodo", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=12),
+    ], className="mb-4"),
     dbc.Row([
         dbc.Col(dash_table.DataTable(
             id='movimientos-table',
+            style_table={'overflowX': 'auto'},
             style_cell={
                 'font-family': 'Montserrat',
                 'font-weight': '400',
                 'textAlign': 'center',
-                'padding': '5px',
+                'padding': '8px',
+                'border': '1px solid #ddd'
             },
             style_header={
                 'fontWeight': '600',
-                'backgroundColor': 'rgb(230, 230, 230)',
-                'color': 'black'
+                'backgroundColor': '#f8f9fa',
+                'color': '#333'
             },
             style_cell_conditional=[
                 {
                     'if': {'column_id': 'Total (S/)'},
                     'fontWeight': 'bold',
-                    'color': 'red'
+                    'color': '#dc3545'
                 }
             ],
             style_as_list_view=True
         ), width=12),
-    ]),
+    ], className="mb-4"),
     dbc.Row([
-        dbc.Col(html.H2("Facturación de los últimos 12 periodos", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600'}))
-    ]),
+        dbc.Col(html.H2("Facturación de los Últimos 12 Periodos", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=12)
+    ], className="mb-4"),
     dbc.Row([
         dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
     ])
-], fluid=True, style={'padding': '20px'})
+], fluid=True, style={'padding': '20px', 'background-color': '#f5f5f5'})
 
 # Callback para actualizar el pago total y movimientos del último periodo
 @app.callback(
@@ -104,11 +106,11 @@ def update_latest_period(_):
             mov['fecha_proceso'] = pd.to_datetime(mov['fecha_proceso']).strftime('%Y-%m-%d')
 
         columns = [
-            {"name": "Fecha de transacción", "id": "fecha_transaccion"},
-            {"name": "Fecha de proceso", "id": "fecha_proceso"},
+            {"name": "Fecha de Transacción", "id": "fecha_transaccion"},
+            {"name": "Fecha de Proceso", "id": "fecha_proceso"},
             {"name": "Detalle", "id": "detalle"},
             {"name": "Monto (S/)", "id": "monto"},
-            {"name": "Cuota cargada", "id": "cuota_cargada"},
+            {"name": "Cuota Cargada", "id": "cuota_cargada"},
             {"name": "% TEA", "id": "porcentaje_tea"},
             {"name": "Capital (S/)", "id": "capital"},
             {"name": "Interés (S/)", "id": "interes"},
