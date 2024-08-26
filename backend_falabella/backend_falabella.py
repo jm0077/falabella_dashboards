@@ -119,6 +119,9 @@ def get_latest_period_data():
         response = {
             'periodo': latest_period.periodo_facturacion,
             'pago_total_mes': latest_period.pago_total_mes,
+            'pago_minimo_mes': latest_period.pago_minimo_mes,
+            'ultimo_dia_pago': latest_period.ultimo_dia_pago.strftime('%Y-%m-%d'),
+            'linea_disponible': latest_period.linea_disponible,
             'movimientos': [
                 {
                     'fecha_transaccion': m.fecha_transaccion,

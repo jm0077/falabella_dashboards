@@ -16,9 +16,9 @@ def index():
 
 # Configurar Dash dentro de Flask
 app = Dash(
-    __name__, 
-    server=server, 
-    routes_pathname_prefix='/dashboard/',  
+    __name__,
+    server=server,
+    routes_pathname_prefix='/dashboard/',
     external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap']
 )
 
@@ -27,7 +27,19 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
         dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
-    ], align='center'), 
+    ], align='center'),
+    dbc.Row([
+        dbc.Col(html.H2("Pago Mínimo del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
+        dbc.Col(html.H2(id='pago-minimo-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
+    ], align='center'),
+    dbc.Row([
+        dbc.Col(html.H2("Fecha Máxima de Pago:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
+        dbc.Col(html.H2(id='fecha-maxima-pago', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
+    ], align='center'),
+    dbc.Row([
+        dbc.Col(html.H2("Línea Disponible:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6),
+        dbc.Col(html.H2(id='linea-disponible', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=6)
+    ], align='center'),
     dbc.Row([
         dbc.Col(html.H2("Movimientos del último periodo", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600'}), width=12),
     ]),
@@ -61,14 +73,19 @@ app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
     ])
-], fluid=True)
+], fluid=True, style={'padding': '20px'})
 
 # Callback para actualizar el pago total y movimientos del último periodo
 @app.callback(
-    [Output('pago-total-mes', 'children'),
-     Output('movimientos-table', 'data'),
-     Output('movimientos-table', 'columns')],
-    Input('pago-total-mes', 'id')
+    [
+        Output('pago-total-mes', 'children'),
+        Output('pago-minimo-mes', 'children'),
+        Output('fecha-maxima-pago', 'children'),
+        Output('linea-disponible', 'children'),
+        Output('movimientos-table', 'data'),
+        Output('movimientos-table', 'columns')
+    ],
+    [Input('movimientos-table', 'id')]
 )
 def update_latest_period(_):
     try:
@@ -76,7 +93,10 @@ def update_latest_period(_):
         response.raise_for_status()
         data = response.json()
 
-        pago_total_mes = f"S/. {data['pago_total_mes']:.2f}"
+        pago_total_mes = f"S/ {data['pago_total_mes']:.2f}"
+        pago_minimo_mes = f"S/ {data['pago_minimo_mes']:.2f}"
+        fecha_maxima_pago = data['ultimo_dia_pago']
+        linea_disponible = f"S/ {data['linea_disponible']:.2f}"
         movimientos = data['movimientos']
 
         for mov in movimientos:
@@ -95,10 +115,10 @@ def update_latest_period(_):
             {"name": "Total (S/)", "id": "total"}
         ]
 
-        return pago_total_mes, movimientos, columns
+        return pago_total_mes, pago_minimo_mes, fecha_maxima_pago, linea_disponible, movimientos, columns
 
     except requests.exceptions.RequestException as e:
-        return "Error al cargar datos", [], []
+        return "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", [], []
 
 # Callback para actualizar el gráfico de consumo por periodo
 @app.callback(
