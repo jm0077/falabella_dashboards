@@ -19,63 +19,88 @@ app = Dash(
     __name__,
     server=server,
     routes_pathname_prefix='/dashboard/',
-    external_stylesheets=[dbc.themes.BOOTSTRAP, 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap']
+    external_stylesheets=[dbc.themes.BOOTSTRAP, '/static/css/styles.css', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap']
 )
 
-# Definir el layout de la aplicación Dash con estilos mejorados
-app.layout = dbc.Container([
-    dbc.Row([
-        dbc.Col(html.H2("Pago Total del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
-        dbc.Col(html.H2(id='pago-total-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
-    ], align='center', className="mb-4"),
-    dbc.Row([
-        dbc.Col(html.H2("Pago Mínimo del Último Periodo:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
-        dbc.Col(html.H2(id='pago-minimo-mes', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
-    ], align='center', className="mb-4"),
-    dbc.Row([
-        dbc.Col(html.H2("Fecha Máxima de Pago:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
-        dbc.Col(html.H2(id='fecha-maxima-pago', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
-    ], align='center', className="mb-4"),
-    dbc.Row([
-        dbc.Col(html.H2("Línea Disponible:", className="text-right", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=6),
-        dbc.Col(html.H2(id='linea-disponible', className="text-left text-primary", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#007bff'}), width=6)
-    ], align='center', className="mb-4"),
-    dbc.Row([
-        dbc.Col(html.H2("Movimientos del Último Periodo", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=12),
-    ], className="mb-4"),
-    dbc.Row([
-        dbc.Col(dash_table.DataTable(
-            id='movimientos-table',
-            style_table={'overflowX': 'auto'},
-            style_cell={
-                'font-family': 'Montserrat',
-                'font-weight': '400',
-                'textAlign': 'center',
-                'padding': '8px',
-                'border': '1px solid #ddd'
-            },
-            style_header={
-                'fontWeight': '600',
-                'backgroundColor': '#f8f9fa',
-                'color': '#333'
-            },
-            style_cell_conditional=[
-                {
-                    'if': {'column_id': 'Total (S/)'},
-                    'fontWeight': 'bold',
-                    'color': '#dc3545'
-                }
-            ],
-            style_as_list_view=True
-        ), width=12),
-    ], className="mb-4"),
-    dbc.Row([
-        dbc.Col(html.H2("Facturación de los Últimos 12 Periodos", className="text-center", style={'font-family': 'Montserrat', 'font-weight': '600', 'color': '#333'}), width=12)
-    ], className="mb-4"),
-    dbc.Row([
-        dbc.Col(dcc.Graph(id='consumption-graph'), width=12)
-    ])
-], fluid=True, style={'padding': '20px', 'background-color': '#f5f5f5'})
+# Definir el layout de la aplicación Dash con un sidebar y contenido principal
+app.layout = html.Div([
+    html.Div([
+        html.Div([
+            html.Div([
+                html.Div("Pago total del último periodo", className="card-title"),
+                html.Div(id="pago-total-mes", className="card-value"),
+                html.Div("0% ▲ del mes anterior", className="card-comparison"),
+            ], className="card"),
+            html.Div([
+                html.Div("Pago mínimo del último periodo", className="card-title"),
+                html.Div(id="pago-minimo-mes", className="card-value"),
+                html.Div("0% ▲ del mes anterior", className="card-comparison"),
+            ], className="card"),
+            html.Div([
+                html.Div("Fecha máxima de pago", className="card-title"),
+                html.Div(id="fecha-maxima-pago", className="card-value"),
+            ], className="card"),
+            html.Div([
+                html.Div("Línea de crédito disponible", className="card-title"),
+                html.Div(id="linea-disponible", className="card-value"),
+            ], className="card"),
+        ], className="sidebar"),
+
+        html.Div([
+            html.Div([
+                html.H4("Histórico de facturación por periodo", className="chart-title"),
+                dcc.Graph(
+                    id='consumption-graph',
+                    className="chart-content",
+                    config={'displayModeBar': False}  # Remove Plotly menu
+                ),
+            ], className="chart-container"),
+            
+            html.Div([
+                html.H4("Movimientos del último periodo", className="table-title"),
+                dash_table.DataTable(
+                    id='movimientos-table',
+                    style_table={'overflowX': 'auto'},
+                    style_cell={
+                        'font-family': 'Montserrat',
+                        'textAlign': 'left',
+                        'padding': '8px',
+                        'backgroundColor': '#f8f9fa',
+                        'color': '#212529',
+                        'minWidth': '100px',
+                        'whiteSpace': 'normal',
+                        'height': 'auto',
+                    },
+                    style_header={
+                        'fontWeight': 'bold',
+                        'backgroundColor': '#007bff',
+                        'color': 'white'
+                    },
+                    columns=[
+                        {"name": "Fecha de Transacción", "id": "fecha_transaccion"},
+                        {"name": "Fecha de Proceso", "id": "fecha_proceso"},
+                        {"name": "Detalle", "id": "detalle"},
+                        {"name": "Monto (S/)", "id": "monto"},
+                        {"name": "Cuota Cargada", "id": "cuota_cargada"},
+                        {"name": "% TEA", "id": "porcentaje_tea"},
+                        {"name": "Capital (S/)", "id": "capital"},
+                        {"name": "Interés (S/)", "id": "interes"},
+                        {"name": "Total (S/)", "id": "total"}
+                    ],
+                    data=[],
+                    style_as_list_view=True,
+                    page_size=10,
+                    style_data_conditional=[
+                        {
+                            'if': {'row_index': 'odd'},
+                            'backgroundColor': '#f2f2f2'
+                        }
+                    ],
+                ),
+            ], className="table-container")
+        ], className="main-content"),
+    ], className="dashboard-content")
+], className="container")
 
 # Callback para actualizar el pago total y movimientos del último periodo
 @app.callback(
@@ -84,8 +109,7 @@ app.layout = dbc.Container([
         Output('pago-minimo-mes', 'children'),
         Output('fecha-maxima-pago', 'children'),
         Output('linea-disponible', 'children'),
-        Output('movimientos-table', 'data'),
-        Output('movimientos-table', 'columns')
+        Output('movimientos-table', 'data')
     ],
     [Input('movimientos-table', 'id')]
 )
@@ -104,23 +128,16 @@ def update_latest_period(_):
         for mov in movimientos:
             mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
             mov['fecha_proceso'] = pd.to_datetime(mov['fecha_proceso']).strftime('%Y-%m-%d')
+            mov['monto'] = f"S/ {mov['monto']:.2f}"
+            mov['porcentaje_tea'] = f"{mov['porcentaje_tea']:.2f}%" if mov['porcentaje_tea'] is not None else "-"
+            mov['capital'] = f"S/ {mov['capital']:.2f}"
+            mov['interes'] = f"S/ {mov['interes']:.2f}"
+            mov['total'] = f"S/ {mov['total']:.2f}"
 
-        columns = [
-            {"name": "Fecha de Transacción", "id": "fecha_transaccion"},
-            {"name": "Fecha de Proceso", "id": "fecha_proceso"},
-            {"name": "Detalle", "id": "detalle"},
-            {"name": "Monto (S/)", "id": "monto"},
-            {"name": "Cuota Cargada", "id": "cuota_cargada"},
-            {"name": "% TEA", "id": "porcentaje_tea"},
-            {"name": "Capital (S/)", "id": "capital"},
-            {"name": "Interés (S/)", "id": "interes"},
-            {"name": "Total (S/)", "id": "total"}
-        ]
-
-        return pago_total_mes, pago_minimo_mes, fecha_maxima_pago, linea_disponible, movimientos, columns
+        return pago_total_mes, pago_minimo_mes, fecha_maxima_pago, linea_disponible, movimientos
 
     except requests.exceptions.RequestException as e:
-        return "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", [], []
+        return "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", "Error al cargar datos", []
 
 # Callback para actualizar el gráfico de consumo por periodo
 @app.callback(
@@ -136,17 +153,26 @@ def update_graph(_):
         df = pd.DataFrame(data)
 
         figure = go.Figure(data=[
-            go.Bar(x=df['periodo'], y=df['pago_total_mes'], marker_color='rgb(58, 123, 213)')
+            go.Scatter(x=df['periodo'], y=df['pago_total_mes'], mode='lines+markers', line=dict(color='#007bff', width=2))
         ])
 
         figure.update_layout(
             xaxis_title="Periodo de Facturación",
             yaxis_title="Pago Total (S/)",
-            font=dict(family="Montserrat", size=14),
+            font=dict(family="Montserrat", size=12),
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
-            margin=dict(l=40, r=40, t=40, b=40),
-            height=400
+            margin=dict(l=50, r=20, t=50, b=100),  # Adjusted margins
+            height=500,  # Increased height
+            hovermode="x unified",
+            xaxis=dict(
+                showgrid=True,
+                gridcolor='lightgrey',
+                linecolor='black',
+                tickangle=45,  # Rotated x-axis labels
+                tickfont=dict(size=10)
+            ),
+            yaxis=dict(showgrid=True, gridcolor='lightgrey', linecolor='black'),
         )
 
         return figure
