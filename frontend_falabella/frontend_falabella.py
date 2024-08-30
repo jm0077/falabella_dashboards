@@ -27,12 +27,12 @@ app.layout = html.Div([
     html.Div([
         html.Div([
             html.Div([
-                html.Div("Pago total del último periodo", className="card-title"),
+                html.Div("Pago total", className="card-title"),
                 html.Div(id="pago-total-mes", className="card-value"),
                 html.Div("0% ▲ del mes anterior", className="card-comparison"),
             ], className="card"),
             html.Div([
-                html.Div("Pago mínimo del último periodo", className="card-title"),
+                html.Div("Pago mínimo", className="card-title"),
                 html.Div(id="pago-minimo-mes", className="card-value"),
                 html.Div("0% ▲ del mes anterior", className="card-comparison"),
             ], className="card"),
@@ -41,7 +41,7 @@ app.layout = html.Div([
                 html.Div(id="fecha-maxima-pago", className="card-value"),
             ], className="card"),
             html.Div([
-                html.Div("Línea de crédito disponible", className="card-title"),
+                html.Div("Línea disponible", className="card-title"),
                 html.Div(id="linea-disponible", className="card-value"),
             ], className="card"),
         ], className="sidebar"),
@@ -78,7 +78,6 @@ app.layout = html.Div([
                     },
                     columns=[
                         {"name": "Fecha de Transacción", "id": "fecha_transaccion"},
-                        {"name": "Fecha de Proceso", "id": "fecha_proceso"},
                         {"name": "Detalle", "id": "detalle"},
                         {"name": "Monto (S/)", "id": "monto"},
                         {"name": "Cuota Cargada", "id": "cuota_cargada"},
@@ -94,6 +93,10 @@ app.layout = html.Div([
                         {
                             'if': {'row_index': 'odd'},
                             'backgroundColor': '#f2f2f2'
+                        },
+                        {
+                            'if': {'column_id': ['monto', 'cuota_cargada', 'porcentaje_tea', 'capital', 'interes', 'total']},
+                            'textAlign': 'right'
                         }
                     ],
                 ),
@@ -127,12 +130,12 @@ def update_latest_period(_):
 
         for mov in movimientos:
             mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
-            mov['fecha_proceso'] = pd.to_datetime(mov['fecha_proceso']).strftime('%Y-%m-%d')
-            mov['monto'] = f"S/ {mov['monto']:.2f}"
-            mov['porcentaje_tea'] = f"{mov['porcentaje_tea']:.2f}%" if mov['porcentaje_tea'] is not None else "-"
-            mov['capital'] = f"S/ {mov['capital']:.2f}"
-            mov['interes'] = f"S/ {mov['interes']:.2f}"
+            mov['monto'] = "-" if mov['monto'] == 0.00 else f"S/ {mov['monto']:.2f}"
+            mov['porcentaje_tea'] = "-" if mov['porcentaje_tea'] == 0.00 else f"{mov['porcentaje_tea']:.2f}%"
+            mov['capital'] = "-" if mov['capital'] == 0.00 else f"S/ {mov['capital']:.2f}"
+            mov['interes'] = "-" if mov['interes'] == 0.00 else f"S/ {mov['interes']:.2f}"
             mov['total'] = f"S/ {mov['total']:.2f}"
+            mov['cuota_cargada'] = "-" if mov['cuota_cargada'] == "NA" else mov['cuota_cargada']
 
         return pago_total_mes, pago_minimo_mes, fecha_maxima_pago, linea_disponible, movimientos
 
