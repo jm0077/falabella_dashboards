@@ -65,24 +65,8 @@ app.layout = html.Div([
         html.H4("Movimientos del último periodo", className="table-title"),
         dash_table.DataTable(
             id='movimientos-table',
-            style_table={'overflowX': 'auto'},
-            style_cell={
-                'font-family': 'Montserrat',
-                'textAlign': 'left',
-                'padding': '8px',
-                'backgroundColor': '#f8f9fa',
-                'color': '#212529',
-                'minWidth': '100px',
-                'whiteSpace': 'normal',
-                'height': 'auto',
-            },
-            style_header={
-                'fontWeight': 'bold',
-                'backgroundColor': '#007bff',
-                'color': 'white'
-            },
             columns=[
-                {"name": "Fecha de Transacción", "id": "fecha_transaccion"},
+                {"name": "Fecha de transacción", "id": "fecha_transaccion"},
                 {"name": "Detalle", "id": "detalle"},
                 {"name": "Monto (S/)", "id": "monto"},
                 {"name": "Cuota Cargada", "id": "cuota_cargada"},
@@ -92,12 +76,25 @@ app.layout = html.Div([
                 {"name": "Total (S/)", "id": "total"}
             ],
             data=[],
-            style_as_list_view=True,
-            page_size=10,
+                        page_size=10,
+            style_table={'overflowX': 'auto'},
+            style_cell={
+                'font-family': 'Montserrat, sans-serif',
+                'textAlign': 'left',
+                'padding': '12px',
+                'whiteSpace': 'normal',
+                'height': 'auto',
+            },
+            style_header={
+                'backgroundColor': '#007bff',
+                'color': 'white',
+                'fontWeight': '600',
+                #'textTransform': 'uppercase',
+            },
             style_data_conditional=[
                 {
                     'if': {'row_index': 'odd'},
-                    'backgroundColor': '#f2f2f2'
+                    'backgroundColor': '#f8f9fa'
                 },
                 {
                     'if': {'column_id': ['monto', 'cuota_cargada', 'porcentaje_tea', 'capital', 'interes', 'total']},
@@ -172,18 +169,18 @@ def update_graph(_):
         figure.update_layout(
             xaxis_title="Periodo de Facturación",
             yaxis_title="Pago Total (S/)",
-            font=dict(family="Montserrat", size=12),
+            font=dict(family="Montserrat", size=16),
             plot_bgcolor='rgba(0,0,0,0)',
             paper_bgcolor='rgba(0,0,0,0)',
             margin=dict(l=50, r=20, t=50, b=100),
-            height=400,
+            height=350,
             hovermode="x unified",
             xaxis=dict(
                 showgrid=True,
                 gridcolor='lightgrey',
                 linecolor='black',
                 tickangle=45,
-                tickfont=dict(size=10),
+                tickfont=dict(size=14),
                 tickformat='%m/%y',
                 nticks=6
             ),
@@ -192,7 +189,8 @@ def update_graph(_):
                 gridcolor='lightgrey',
                 linecolor='black',
                 tickformat=',.0f',
-                nticks=5
+                nticks=5,
+                tickfont=dict(size=14)
             ),
         )
 
