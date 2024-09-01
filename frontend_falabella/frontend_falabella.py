@@ -132,11 +132,11 @@ def update_latest_period(_):
 
         for mov in movimientos:
             mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
-            mov['monto'] = "-" if mov['monto'] == 0.00 else f"S/ {mov['monto']:.2f}"
-            mov['porcentaje_tea'] = "-" if mov['porcentaje_tea'] == 0.00 else f"{mov['porcentaje_tea']:.2f}%"
-            mov['capital'] = "-" if mov['capital'] == 0.00 else f"S/ {mov['capital']:.2f}"
-            mov['interes'] = "-" if mov['interes'] == 0.00 else f"S/ {mov['interes']:.2f}"
-            mov['total'] = f"S/ {mov['total']:.2f}"
+            mov['monto'] = "-" if mov['monto'] == 0.00 else f"{mov['monto']:.2f}"
+            mov['porcentaje_tea'] = "-" if mov['porcentaje_tea'] == 0.00 else f"{mov['porcentaje_tea']:.2f}"
+            mov['capital'] = "-" if mov['capital'] == 0.00 else f"{mov['capital']:.2f}"
+            mov['interes'] = "-" if mov['interes'] == 0.00 else f"{mov['interes']:.2f}"
+            mov['total'] = f"{mov['total']:.2f}"
             mov['cuota_cargada'] = "-" if mov['cuota_cargada'] == "NA" else mov['cuota_cargada']
 
         periodo_facturacion = html.Span([
