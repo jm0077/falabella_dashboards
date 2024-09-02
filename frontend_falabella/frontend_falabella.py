@@ -5,9 +5,12 @@ import dash_bootstrap_components as dbc
 import requests
 import pandas as pd
 import plotly.graph_objs as go
+from config import BACKEND_ENDPOINT
+from config import BACKEND_ENDPOINT, FLASK_SECRET_KEY, DASH_ASSETS_FOLDER, DASH_EXTERNAL_STYLESHEETS
 
 # Configurar Flask
-server = Flask(__name__)
+server = Flask(__name__, static_folder=DASH_ASSETS_FOLDER)
+server.secret_key = FLASK_SECRET_KEY
 
 # Ruta principal para renderizar la página HTML
 @server.route('/')
@@ -19,7 +22,8 @@ app = Dash(
     __name__,
     server=server,
     routes_pathname_prefix='/dashboard/',
-    external_stylesheets=[dbc.themes.BOOTSTRAP, '/static/css/styles.css', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap']
+    assets_folder=DASH_ASSETS_FOLDER,
+    external_stylesheets=DASH_EXTERNAL_STYLESHEETS
 )
 
 # Definir el layout de la aplicación Dash
@@ -32,12 +36,12 @@ app.layout = html.Div([
                     html.Div([
                         html.Div("Pago total", className="card-title"),
                         html.Div(id="pago-total-mes", className="card-value"),
-                        html.Div("0% ▲ del mes anterior", className="card-comparison"),
+                        html.Div(id="pago-total-comparison", className="card-comparison"),
                     ], className="card"),
                     html.Div([
                         html.Div("Pago mínimo", className="card-title"),
                         html.Div(id="pago-minimo-mes", className="card-value"),
-                        html.Div("0% ▲ del mes anterior", className="card-comparison"),
+                        html.Div(id="pago-minimo-comparison", className="card-comparison"),
                     ], className="card"),
                 ], className="card-row"),
                 html.Div([
@@ -76,7 +80,7 @@ app.layout = html.Div([
                 {"name": "Total (S/)", "id": "total"}
             ],
             data=[],
-                        page_size=10,
+            page_size=10,
             style_table={'overflowX': 'auto'},
             style_cell={
                 'font-family': 'Montserrat, sans-serif',
@@ -105,7 +109,7 @@ app.layout = html.Div([
     ], className="table-container")
 ], className="container")
 
-# Callback para actualizar el pago total y movimientos del último periodo
+# Callback para actualizar el pago total, pago mínimo, comparaciones, movimientos y otros datos del último periodo
 @app.callback(
     [
         Output('pago-total-mes', 'children'),
@@ -113,23 +117,28 @@ app.layout = html.Div([
         Output('fecha-maxima-pago', 'children'),
         Output('linea-disponible', 'children'),
         Output('movimientos-table', 'data'),
-        Output('periodo-facturacion', 'children')
+        Output('periodo-facturacion', 'children'),
+        Output('pago-total-comparison', 'children'),
+        Output('pago-minimo-comparison', 'children'),
     ],
     [Input('movimientos-table', 'id')]
 )
 def update_latest_period(_):
     try:
-        response = requests.get("https://backend-falabella-app-service-alhjlx25pa-tl.a.run.app/api/latest-period-data")
-        response.raise_for_status()
-        data = response.json()
+        # Solicitar datos del último periodo
+        response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data")
+        response_period.raise_for_status()
+        data_period = response_period.json()
 
-        pago_total_mes = f"S/ {data['pago_total_mes']:.2f}"
-        pago_minimo_mes = f"S/ {data['pago_minimo_mes']:.2f}"
-        fecha_maxima_pago = data['ultimo_dia_pago']
-        linea_disponible = f"S/ {data['linea_disponible']:.2f}"
-        ultimo_periodo = data['periodo']
-        movimientos = data['movimientos']
+        # Formatear los datos del último periodo
+        pago_total_mes = f"S/ {data_period['pago_total_mes']:.2f}"
+        pago_minimo_mes = f"S/ {data_period['pago_minimo_mes']:.2f}"
+        fecha_maxima_pago = data_period['ultimo_dia_pago']
+        linea_disponible = f"S/ {data_period['linea_disponible']:.2f}"
+        ultimo_periodo = data_period['periodo']
+        movimientos = data_period['movimientos']
 
+        # Formatear movimientos
         for mov in movimientos:
             mov['fecha_transaccion'] = pd.to_datetime(mov['fecha_transaccion']).strftime('%Y-%m-%d')
             mov['monto'] = "-" if mov['monto'] == 0.00 else f"{mov['monto']:.2f}"
@@ -139,15 +148,61 @@ def update_latest_period(_):
             mov['total'] = f"{mov['total']:.2f}"
             mov['cuota_cargada'] = "-" if mov['cuota_cargada'] == "NA" else mov['cuota_cargada']
 
+        # Solicitar datos de cambio porcentual
+        response_change = requests.get(f"{BACKEND_ENDPOINT}/percentage-change")
+        response_change.raise_for_status()
+        data_change = response_change.json()
+
+        change_total = data_change.get('change_total')
+        change_minimo = data_change.get('change_minimo')
+
+        # Formatear comparaciones con colores
+        if change_total is not None:
+            if change_total < 0:
+                change_total_text = html.Span(f"▼{change_total:.2f}%", style={"color": "green"})
+            else:
+                change_total_text = html.Span(f"▲{change_total:.2f}%", style={"color": "red"})
+        else:
+            change_total_text = "N/A"
+
+        if change_minimo is not None:
+            if change_minimo < 0:
+                change_minimo_text = html.Span(f"▼{change_minimo:.2f}%", style={"color": "green"})
+            else:
+                change_minimo_text = html.Span(f"▲{change_minimo:.2f}%", style={"color": "red"})
+        else:
+            change_minimo_text = "N/A"
+
+        # Formatear periodo de facturación
         periodo_facturacion = html.Span([
             "Periodo de facturación: ",
             html.Span(ultimo_periodo, style={"color": "#007bff"})
         ])
 
-        return pago_total_mes, pago_minimo_mes, fecha_maxima_pago, linea_disponible, movimientos, periodo_facturacion
+        return (
+            pago_total_mes,
+            pago_minimo_mes,
+            fecha_maxima_pago,
+            linea_disponible,
+            movimientos,
+            periodo_facturacion,
+            change_total_text,
+            change_minimo_text
+        )
 
     except requests.exceptions.RequestException as e:
-        return "Error", "Error", "Error", "Error", [], "Error al cargar datos"
+        # Manejo de errores: retornar valores por defecto o mensajes de error
+        error_text = html.Span("Error al cargar datos", style={"color": "red"})
+        return (
+            "Error",
+            "Error",
+            "Error",
+            "Error",
+            [],
+            "Error al cargar datos",
+            error_text,
+            error_text
+        )
 
 # Callback para actualizar el gráfico de consumo por periodo
 @app.callback(
@@ -156,14 +211,19 @@ def update_latest_period(_):
 )
 def update_graph(_):
     try:
-        response = requests.get("https://backend-falabella-app-service-alhjlx25pa-tl.a.run.app/api/consumption-data")
+        response = requests.get(f"{BACKEND_ENDPOINT}/consumption-data")
         response.raise_for_status()
         data = response.json()
 
         df = pd.DataFrame(data)
 
         figure = go.Figure(data=[
-            go.Scatter(x=df['periodo'], y=df['pago_total_mes'], mode='lines+markers', line=dict(color='#007bff', width=2))
+            go.Scatter(
+                x=df['periodo'], 
+                y=df['pago_total_mes'], 
+                mode='lines+markers', 
+                line=dict(color='#007bff', width=2)
+            )
         ])
 
         figure.update_layout(
@@ -209,4 +269,4 @@ def update_graph(_):
         return go.Figure()
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8080, debug=True)
+    app.run_server(host='0.0.0.0', port=8080, debug=False)
