@@ -1,14 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estático</title>
+    <title>Bienvenido - Banco Falabella</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        .logo-link {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+        .logo {
+            width: 200px;
+            height: auto;
+        }
+        .logout-link {
+            display: block;
+            margin-top: 1rem;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="react-app">
+    <div class="container">
+        <h1>Bienvenido a Banco Falabella</h1>
+        <p>Haga clic en el logo para acceder al Dashboard Falabella</p>
+        <a href="/dashboard/" class="logo-link">
+            <img src="https://www.bancofalabella.pe/assets/logo.svg" alt="Logo Banco Falabella" class="logo">
+        </a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Cerrar sesión</a>
+    </div>
+    <div id="react-app" style="display: none;">
         <!-- Aquí se montará la aplicación Dash -->
     </div>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

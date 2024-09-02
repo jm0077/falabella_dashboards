@@ -1,19 +1,58 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import check_password_hash, generate_password_hash
 from dash import Dash, dcc, html, dash_table
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import requests
 import pandas as pd
 import plotly.graph_objs as go
-from config import BACKEND_ENDPOINT
 from config import BACKEND_ENDPOINT, FLASK_SECRET_KEY, DASH_ASSETS_FOLDER, DASH_EXTERNAL_STYLESHEETS
 
 # Configurar Flask
 server = Flask(__name__, static_folder=DASH_ASSETS_FOLDER)
-server.secret_key = FLASK_SECRET_KEY
+server.config['SECRET_KEY'] = FLASK_SECRET_KEY
+
+# Configurar Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(server)
+login_manager.login_view = 'login'
+
+# Modelo de usuario simple
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+# Función para cargar el usuario
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
+# Ruta de login
+@server.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        # Aquí deberías verificar las credenciales con tu backend
+        if username == 'admin' and password == 'password':  # Ejemplo simple
+            user = User(username)
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password')
+    return render_template('login.html')
+
+# Ruta de logout
+@server.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 # Ruta principal para renderizar la página HTML
 @server.route('/')
+@login_required
 def index():
     return render_template('index.html')
 
