@@ -1,0 +1,28 @@
+project_root/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── models.py
+│   ├── dashboards/
+│   │   ├── __init__.py
+│   │   ├── falabella/
+│   │   │   ├── __init__.py
+│   │   │   ├── layout.py
+│   │   │   └── callbacks.py
+│   │   ├── other_bank/
+│   │   │   ├── __init__.py
+│   │   │   ├── layout.py
+│   │   │   └── callbacks.py
+│   │   └── dashboard_factory.py
+│   ├── templates/
+│   │   ├── index.html
+│   │   └── login.html
+│   └── static/
+│       ├── css/
+│       └── js/
+├── config.py
+├── requirements.txt
+└── Dockerfile

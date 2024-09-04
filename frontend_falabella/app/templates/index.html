@@ -55,10 +55,10 @@
     <div class="container">
         <h1>Bienvenido a Banco Falabella</h1>
         <p>Haga clic en el logo para acceder al Dashboard Falabella</p>
-        <a href="/dashboard/" class="logo-link">
+		<a href="/dashboard/" class="logo-link">
             <img src="https://www.bancofalabella.pe/assets/logo.svg" alt="Logo Banco Falabella" class="logo">
         </a>
-        <a href="{{ url_for('logout') }}" class="logout-link">Cerrar sesión</a>
+        <a href="{{ url_for('auth.logout') }}" class="logout-link">Cerrar sesión</a>
     </div>
     <div id="react-app" style="display: none;">
         <!-- Aquí se montará la aplicación Dash -->

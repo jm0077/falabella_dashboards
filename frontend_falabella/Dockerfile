@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8080
 
 # Comando para ejecutar la aplicación
-CMD ["python", "frontend_falabella.py"]
+CMD ["python", "-m", "app.main"]
