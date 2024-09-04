@@ -28,7 +28,8 @@ def create_app():
         server=server,
         url_base_pathname='/dashboard/',
         assets_folder=DASH_ASSETS_FOLDER,
-        external_stylesheets=DASH_EXTERNAL_STYLESHEETS
+        external_stylesheets=DASH_EXTERNAL_STYLESHEETS,
+        suppress_callback_exceptions=True  # Permite excepciones de callbacks
     )
 
     # Crear y registrar dashboards

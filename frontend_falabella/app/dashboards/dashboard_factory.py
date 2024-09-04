@@ -5,12 +5,6 @@ from .falabella import create_falabella_dashboard
 from .scotiabank import create_scotiabank_dashboard
 
 def create_dashboards(app):
-    # Falabella Dashboard
-    falabella_layout = create_falabella_dashboard(app)
-
-    # Scotiabank Dashboard
-    scotiabank_layout = create_scotiabank_dashboard(app)
-
     # Proteger todas las rutas del dashboard
     for view_function in app.server.view_functions:
         if view_function.startswith('/dashboard/'):
@@ -22,13 +16,23 @@ def create_dashboards(app):
         html.Div(id='page-content')  # Contenedor que cambiará de contenido
     ])
 
+    # Variables para controlar si los callbacks ya fueron registrados
+    app.falabella_callbacks_registered = False
+    app.scotiabank_callbacks_registered = False
+
     # Callback para cambiar el layout según la URL
     @app.callback(Output('page-content', 'children'),
                   Input('url', 'pathname'))
     def display_page(pathname):
         if pathname == '/dashboard/falabella/':
-            return falabella_layout
+            if not app.falabella_callbacks_registered:
+                create_falabella_dashboard(app)
+                app.falabella_callbacks_registered = True
+            return create_falabella_dashboard(app)
         elif pathname == '/dashboard/scotiabank/':
-            return scotiabank_layout
+            if not app.scotiabank_callbacks_registered:
+                create_scotiabank_dashboard(app)
+                app.scotiabank_callbacks_registered = True
+            return create_scotiabank_dashboard(app)
         else:
             return html.Div('404: Not Found')  # Página no encontrada
