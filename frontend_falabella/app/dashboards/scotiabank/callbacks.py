@@ -8,16 +8,16 @@ from dash import html
 def register_callbacks(app):
     @app.callback(
         [
-            Output('pago-total-mes-falabella', 'children'),
-            Output('pago-minimo-mes-falabella', 'children'),
-            Output('fecha-maxima-pago-falabella', 'children'),
-            Output('linea-disponible-falabella', 'children'),
-            Output('movimientos-table-falabella', 'data'),
-            Output('periodo-facturacion-falabella', 'children'),
-            Output('pago-total-comparison-falabella', 'children'),
-            Output('pago-minimo-comparison-falabella', 'children'),
+            Output('pago-total-mes-scotiabank', 'children'),
+            Output('pago-minimo-mes-scotiabank', 'children'),
+            Output('fecha-maxima-pago-scotiabank', 'children'),
+            Output('linea-disponible-scotiabank', 'children'),
+            Output('movimientos-table-scotiabank', 'data'),
+            Output('periodo-facturacion-scotiabank', 'children'),
+            Output('pago-total-comparison-scotiabank', 'children'),
+            Output('pago-minimo-comparison-scotiabank', 'children'),
         ],
-        [Input('movimientos-table-falabella', 'id')]
+        [Input('movimientos-table-scotiabank', 'id')]
     )
     def update_latest_period(_):
         try:
@@ -94,8 +94,8 @@ def register_callbacks(app):
             )
 
     @app.callback(
-        Output('consumption-graph-falabella', 'figure'),
-        Input('consumption-graph-falabella', 'id')
+        Output('consumption-graph-scotiabank', 'figure'),
+        Input('consumption-graph-scotiabank', 'id')
     )
     def update_graph(_):
         try:
