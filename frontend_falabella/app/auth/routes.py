@@ -1,29 +1,86 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, redirect, url_for, flash, session, current_app, render_template, request
 from flask_login import login_user, login_required, logout_user
 from .models import User
+import logging
+from urllib.parse import urlencode
+import json
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
+# Ruta de login que redirige a Keycloak
+@auth_bp.route('/login', methods=['GET'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if username == 'admin' and password == 'password':  # Usuario y contraseña hardcodeados
-            user = User(username)
-            login_user(user)
-            return redirect(url_for('auth.index'))  # Cambiado a 'auth.index'
-        else:
-            flash('Invalid username or password')
-    return render_template('login.html')
+    redirect_uri = url_for('auth.auth', _external=True, _scheme='https')
+    keycloak = current_app.config['keycloak']  # Acceder a keycloak desde current_app
+    return keycloak.authorize_redirect(redirect_uri)
 
+# Ruta que maneja el callback de Keycloak y autentica al usuario
+@auth_bp.route('/auth')
+def auth():
+    keycloak = current_app.config['keycloak']
+    try:
+        token = keycloak.authorize_access_token()
+        userinfo = keycloak.userinfo(token=token)
+    except Exception as e:
+        logging.error(f"Error in authentication process: {str(e)}")
+        flash("Failed to authenticate.", "error")
+        return redirect(url_for('auth.login'))
+
+    if not userinfo:
+        flash("Failed to fetch user information.", "error")
+        return redirect(url_for('auth.login'))
+
+    # Autenticar al usuario con Flask-Login
+    user = User(userinfo['sub'])  # Se usa el 'sub' (Subject Identifier) como ID de usuario
+    login_user(user)
+
+    # Guardar información del usuario en la sesión
+    session['user'] = userinfo
+    session['id_token'] = token.get('id_token')  # Guardar el ID token
+
+    # Redirigir al dashboard tras el inicio de sesión exitoso
+    return redirect(url_for('auth.index'))
+
+# Ruta de logout que también cierra sesión en Keycloak
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    keycloak = current_app.config['keycloak']
     logout_user()
-    return redirect(url_for('auth.login'))
     
-# Ruta principal para renderizar la página HTML
+    client_secrets = current_app.config.get('OIDC_CLIENT_SECRETS', {})
+    if not client_secrets:
+        logging.error("OIDC client secrets not found in app config")
+        return redirect(url_for('auth.login'))
+
+    keycloak_logout_url = f"{client_secrets.get('web', {}).get('issuer', '')}/protocol/openid-connect/logout"
+    
+    # Obtener el ID token de la sesión
+    id_token = session.get('id_token')
+    
+    # Limpiar la sesión después de obtener el id_token
+    session.clear()
+    
+    # Usar la URL base de la aplicación como URI de redirección post-logout
+    base_url = url_for('auth.index', _external=True, _scheme='https').rstrip('/')
+
+    # Construir los parámetros de la URL de cierre de sesión
+    params = {
+        'post_logout_redirect_uri': base_url,
+        'client_id': client_secrets.get('web', {}).get('client_id', ''),
+    }
+    
+    # Añadir id_token_hint si está disponible
+    if id_token:
+        params['id_token_hint'] = id_token
+
+    # Construir la URL completa de cierre de sesión
+    logout_url = f"{keycloak_logout_url}?{urlencode(params)}"
+
+    logging.info(f"Redirecting to Keycloak logout URL: {logout_url}")
+    return redirect(logout_url)
+
+# Ruta principal que renderiza el contenido protegido con autenticación
 @auth_bp.route('/')
 @login_required
 def index():

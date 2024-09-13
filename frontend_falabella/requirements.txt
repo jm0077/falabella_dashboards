@@ -8,3 +8,6 @@ numpy==1.24.3
 requests==2.31.0
 gunicorn==20.1.0
 plotly==5.15.0
+
+# Dependencias para Keycloak y Authlib
+authlib==1.2.0

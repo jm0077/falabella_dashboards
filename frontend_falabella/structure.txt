@@ -2,6 +2,7 @@ project_root/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py
+│   ├── auth_setup.py
 │   ├── auth/
 │   │   ├── __init__.py
 │   │   ├── routes.py
@@ -12,7 +13,7 @@ project_root/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
 │   │   │   └── callbacks.py
-│   │   ├── other_bank/
+│   │   ├── scotiabank/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
 │   │   │   └── callbacks.py
