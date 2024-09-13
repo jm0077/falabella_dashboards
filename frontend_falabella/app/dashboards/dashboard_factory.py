@@ -30,7 +30,7 @@ def create_dashboards(app, oauth):
     def display_page(pathname):
         if not hasattr(display_page, 'login_required'):
             display_page.login_required = login_required(display_page)
-            return display_page.login_required()
+            return display_page.login_required(pathname)
         
         if pathname == '/dashboard/falabella/':
             if not app.falabella_callbacks_registered:
