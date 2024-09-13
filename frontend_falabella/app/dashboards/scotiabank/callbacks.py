@@ -1,4 +1,4 @@
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import requests
 import pandas as pd
 import plotly.graph_objs as go
@@ -17,9 +17,13 @@ def register_callbacks(app):
             Output('pago-total-comparison-scotiabank', 'children'),
             Output('pago-minimo-comparison-scotiabank', 'children'),
         ],
-        [Input('movimientos-table-scotiabank', 'id')]
+        [Input('url', 'pathname')],
+        [State('movimientos-table-scotiabank', 'id')]
     )
-    def update_latest_period(_):
+    def update_latest_period(pathname, _):
+        if pathname != '/dashboard/scotiabank/':
+            return dash.no_update
+        
         try:
             response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data")
             response_period.raise_for_status()
@@ -95,9 +99,13 @@ def register_callbacks(app):
 
     @app.callback(
         Output('consumption-graph-scotiabank', 'figure'),
-        Input('consumption-graph-scotiabank', 'id')
+        [Input('url', 'pathname')],
+        [State('consumption-graph-scotiabank', 'id')]
     )
-    def update_graph(_):
+    def update_graph(pathname, _):
+        if pathname != '/dashboard/scotiabank/':
+            return dash.no_update
+        
         try:
             response = requests.get(f"{BACKEND_ENDPOINT}/consumption-data")
             response.raise_for_status()

@@ -1,4 +1,4 @@
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import requests
 import pandas as pd
 import plotly.graph_objs as go
@@ -17,9 +17,13 @@ def register_callbacks(app):
             Output('pago-total-comparison-falabella', 'children'),
             Output('pago-minimo-comparison-falabella', 'children'),
         ],
-        [Input('movimientos-table-falabella', 'id')]
+        [Input('url', 'pathname')],
+        [State('movimientos-table-falabella', 'id')]
     )
-    def update_latest_period(_):
+    def update_latest_period(pathname, _):
+        if pathname != '/dashboard/falabella/':
+            return dash.no_update
+        
         try:
             response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data")
             response_period.raise_for_status()
@@ -95,9 +99,13 @@ def register_callbacks(app):
 
     @app.callback(
         Output('consumption-graph-falabella', 'figure'),
-        Input('consumption-graph-falabella', 'id')
+        [Input('url', 'pathname')],
+        [State('consumption-graph-falabella', 'id')]
     )
-    def update_graph(_):
+    def update_graph(pathname, _):
+        if pathname != '/dashboard/falabella/':
+            return dash.no_update
+        
         try:
             response = requests.get(f"{BACKEND_ENDPOINT}/consumption-data")
             response.raise_for_status()

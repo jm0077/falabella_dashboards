@@ -2,8 +2,8 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 from flask_login import login_required
 from flask import redirect, url_for
-from .falabella import create_falabella_dashboard
-from .scotiabank import create_scotiabank_dashboard
+from .falabella import create_falabella_dashboard, register_falabella_callbacks
+from .scotiabank import create_scotiabank_dashboard, register_scotiabank_callbacks
 
 def create_dashboards(app, oauth):
     def protect_dashviews(app):
@@ -20,28 +20,18 @@ def create_dashboards(app, oauth):
         html.Div(id='page-content')
     ])
 
-    # Variables para controlar si los callbacks ya fueron registrados
-    app.falabella_callbacks_registered = False
-    app.scotiabank_callbacks_registered = False
+    register_falabella_callbacks(app)
+    register_scotiabank_callbacks(app)
 
     # Callback para cambiar el layout según la URL
     @app.callback(Output('page-content', 'children'),
                   Input('url', 'pathname'))
+    @login_required
     def display_page(pathname):
-        if not hasattr(display_page, 'login_required'):
-            display_page.login_required = login_required(display_page)
-            return display_page.login_required(pathname)
-        
         if pathname == '/dashboard/falabella/':
-            if not app.falabella_callbacks_registered:
-                create_falabella_dashboard(app)
-                app.falabella_callbacks_registered = True
-            return create_falabella_dashboard(app)
+            return create_falabella_dashboard()
         elif pathname == '/dashboard/scotiabank/':
-            if not app.scotiabank_callbacks_registered:
-                create_scotiabank_dashboard(app)
-                app.scotiabank_callbacks_registered = True
-            return create_scotiabank_dashboard(app)
+            return create_scotiabank_dashboard()
         else:
             return html.Div('404: Not Found')  # Página no encontrada
 

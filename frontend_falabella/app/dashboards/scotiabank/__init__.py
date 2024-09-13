@@ -1,8 +1,8 @@
 from .layout import create_layout
 from .callbacks import register_callbacks
 
-def create_scotiabank_dashboard(app):
-    if not hasattr(app, 'scotiabank_callbacks_registered') or not app.scotiabank_callbacks_registered:
-        register_callbacks(app)
-        app.scotiabank_callbacks_registered = True
+def create_scotiabank_dashboard():
     return create_layout()
+
+def register_scotiabank_callbacks(app):
+    register_callbacks(app)
