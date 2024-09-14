@@ -31,12 +31,14 @@ def auth():
         return redirect(url_for('auth.login'))
 
     # Autenticar al usuario con Flask-Login
-    user = User(userinfo['sub'])  # Se usa el 'sub' (Subject Identifier) como ID de usuario
+    user_id = userinfo['sub']  # El 'sub' es el ID único del usuario en Keycloak
+    user = User(user_id)
     login_user(user)
 
     # Guardar información del usuario en la sesión
     session['user'] = userinfo
     session['id_token'] = token.get('id_token')  # Guardar el ID token
+    session['user_id'] = user_id
 
     # Redirigir al dashboard tras el inicio de sesión exitoso
     return redirect(url_for('auth.index'))

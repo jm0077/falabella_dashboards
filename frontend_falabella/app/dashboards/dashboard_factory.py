@@ -1,7 +1,7 @@
 from dash import html, dcc
 from dash.dependencies import Input, Output
 from flask_login import login_required
-from flask import redirect, url_for
+from flask import redirect, url_for, session
 from .falabella import create_falabella_dashboard, register_falabella_callbacks
 from .scotiabank import create_scotiabank_dashboard, register_scotiabank_callbacks
 
@@ -28,6 +28,10 @@ def create_dashboards(app, oauth):
                   Input('url', 'pathname'))
     @login_required
     def display_page(pathname):
+        user_id = session.get('user_id')
+        if not user_id:
+            return redirect(url_for('auth.login'))
+        
         if pathname == '/dashboard/falabella/':
             return create_falabella_dashboard()
         elif pathname == '/dashboard/scotiabank/':

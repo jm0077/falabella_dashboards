@@ -1,5 +1,6 @@
 from dash.dependencies import Input, Output, State
 import requests
+from flask import session
 import pandas as pd
 import plotly.graph_objs as go
 from config import BACKEND_ENDPOINT
@@ -24,8 +25,12 @@ def register_callbacks(app):
         if pathname != '/dashboard/scotiabank/':
             return dash.no_update
         
+        user_id = session.get('user_id')
+        if not user_id:
+            return ("Error", "Error", "Error", "Error", [], "Error: No user ID", "Error", "Error")
+        
         try:
-            response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data")
+            response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data", params={'userId': user_id})
             response_period.raise_for_status()
             data_period = response_period.json()
 
@@ -45,7 +50,7 @@ def register_callbacks(app):
                 mov['total'] = f"{mov['total']:.2f}"
                 mov['cuota_cargada'] = "-" if mov['cuota_cargada'] == "NA" else mov['cuota_cargada']
 
-            response_change = requests.get(f"{BACKEND_ENDPOINT}/percentage-change")
+            response_change = requests.get(f"{BACKEND_ENDPOINT}/percentage-change", params={'userId': user_id})
             response_change.raise_for_status()
             data_change = response_change.json()
 
@@ -106,8 +111,12 @@ def register_callbacks(app):
         if pathname != '/dashboard/scotiabank/':
             return dash.no_update
         
+        user_id = session.get('user_id')
+        if not user_id:
+            return go.Figure()
+        
         try:
-            response = requests.get(f"{BACKEND_ENDPOINT}/consumption-data")
+            response = requests.get(f"{BACKEND_ENDPOINT}/consumption-data", params={'userId': user_id})
             response.raise_for_status()
             data = response.json()
 
