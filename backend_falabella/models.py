@@ -1,12 +1,12 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, Index
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
-# Modelo InfoGeneral
 class InfoGeneral(Base):
     __tablename__ = 'info_general'
     id = Column(Integer, primary_key=True)
+    userId = Column(String(36), index=True)  # Add index here
     nombre = Column(String(255))
     tipo_tarjeta = Column(String(255))
     direccion = Column(Text)
@@ -21,13 +21,12 @@ class InfoGeneral(Base):
     ultimo_dia_pago = Column(Date)
     linea_utilizada = Column(Float)
     linea_disponible = Column(Float)
-    userId = Column(String(36))
     movimientos = relationship('Movimiento', backref='info_general')
 
-# Modelo Movimiento
 class Movimiento(Base):
     __tablename__ = 'info_movimientos'
     id = Column(Integer, primary_key=True)
+    userId = Column(String(36), index=True)  # Add index here
     fecha_transaccion = Column(Date)
     fecha_proceso = Column(Date)
     detalle = Column(Text)
@@ -37,5 +36,8 @@ class Movimiento(Base):
     capital = Column(Float)
     interes = Column(Float)
     total = Column(Float)
-    userId = Column(String(36))
     info_general_id = Column(Integer, ForeignKey('info_general.id'))
+
+# Create an index on userId for both tables
+Index('idx_info_general_userId', InfoGeneral.userId)
+Index('idx_movimiento_userId', Movimiento.userId)
