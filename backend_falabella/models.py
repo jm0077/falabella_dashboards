@@ -21,6 +21,7 @@ class InfoGeneral(Base):
     ultimo_dia_pago = Column(Date)
     linea_utilizada = Column(Float)
     linea_disponible = Column(Float)
+    userId = Column(String(36))
     movimientos = relationship('Movimiento', backref='info_general')
 
 # Modelo Movimiento
@@ -36,4 +37,5 @@ class Movimiento(Base):
     capital = Column(Float)
     interes = Column(Float)
     total = Column(Float)
+    userId = Column(String(36))
     info_general_id = Column(Integer, ForeignKey('info_general.id'))

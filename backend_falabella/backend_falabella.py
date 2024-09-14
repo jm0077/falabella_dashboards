@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from config import DB_URL, FLASK_SECRET_KEY
 from models import InfoGeneral, Movimiento
 from datetime import datetime, timedelta
@@ -27,12 +27,17 @@ def with_database_session(func):
 @app.route('/api/consumption-data', methods=['GET'])
 @with_database_session
 def get_consumption_data(session):
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({'error': 'userId es requerido'}), 400
+
     twelve_months_ago = datetime.now() - timedelta(days=365)
     results = session.query(
         InfoGeneral.periodo_facturacion.label('periodo'),
         InfoGeneral.pago_total_mes
     ).filter(
-        InfoGeneral.ultimo_dia_pago >= twelve_months_ago
+        InfoGeneral.ultimo_dia_pago >= twelve_months_ago,
+        InfoGeneral.userId == user_id
     ).order_by(
         InfoGeneral.ultimo_dia_pago.asc()
     ).all()
@@ -46,9 +51,15 @@ def get_consumption_data(session):
 @app.route('/api/latest-period-data', methods=['GET'])
 @with_database_session
 def get_latest_period_data(session):
-    latest_period = session.query(InfoGeneral).order_by(InfoGeneral.ultimo_dia_pago.desc()).first()
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({'error': 'userId es requerido'}), 400
+
+    latest_period = session.query(InfoGeneral).filter(
+        InfoGeneral.userId == user_id
+    ).order_by(InfoGeneral.ultimo_dia_pago.desc()).first()
     if not latest_period:
-        return jsonify({'error': 'No se encontró información del último período'}), 404
+        return jsonify({'error': 'No se encontró información del último período para el usuario especificado'}), 404
 
     movements = session.query(
         Movimiento.fecha_transaccion,
@@ -87,9 +98,13 @@ def get_latest_period_data(session):
 @app.route('/api/percentage-change', methods=['GET'])
 @with_database_session
 def get_percentage_change(session):
-    latest_two_periods = _get_latest_two_periods(session)
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({'error': 'userId es requerido'}), 400
+
+    latest_two_periods = _get_latest_two_periods(session, user_id)
     if len(latest_two_periods) < 2:
-        return jsonify({'error': 'No se encontraron suficientes períodos para calcular el cambio porcentual'}), 404
+        return jsonify({'error': 'No se encontraron suficientes períodos para calcular el cambio porcentual para el usuario especificado'}), 404
 
     latest_period, previous_period = latest_two_periods
     change_total = _calculate_percentage_change(latest_period.pago_total_mes, previous_period.pago_total_mes)
@@ -101,10 +116,12 @@ def get_percentage_change(session):
     }
     return jsonify(response)
 
-def _get_latest_two_periods(session):
+def _get_latest_two_periods(session, user_id):
     return session.query(
         InfoGeneral.pago_total_mes,
         InfoGeneral.pago_minimo_mes
+    ).filter(
+        InfoGeneral.userId == user_id
     ).order_by(
         InfoGeneral.ultimo_dia_pago.desc()
     ).limit(2).all()
