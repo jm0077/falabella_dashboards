@@ -47,6 +47,7 @@ def auth():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    logging.info("Logout route accessed")
     keycloak = current_app.config['keycloak']
     logout_user()
     
@@ -59,12 +60,14 @@ def logout():
     
     # Obtener el ID token de la sesión
     id_token = session.get('id_token')
+    logging.info(f"ID token retrieved: {'Yes' if id_token else 'No'}")
     
     # Limpiar la sesión después de obtener el id_token
     session.clear()
+    logging.info("Session cleared")
     
     # Usar la URL base de la aplicación como URI de redirección post-logout
-    base_url = url_for('auth.index', _external=True, _scheme='https').rstrip('/')
+    base_url = url_for('auth.login', _external=True, _scheme='https')
 
     # Construir los parámetros de la URL de cierre de sesión
     params = {
@@ -86,4 +89,5 @@ def logout():
 @auth_bp.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    # Redirigir al dashboard principal de Dash
+    return redirect('/dashboard/')

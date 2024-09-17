@@ -17,13 +17,13 @@ project_root/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
 │   │   │   └── callbacks.py
-│   │   └── dashboard_factory.py
-│   ├── templates/
-│   │   ├── index.html
-│   │   └── login.html
+│   │   ├── dashboard_factory.py
+│   │   ├── navbar.py
+│   │   └── home_layout.py  # Nuevo archivo
 │   └── static/
 │       ├── css/
-│       └── js/
+│       ├── js/
+│       └── img/
 ├── config.py
 ├── requirements.txt
 └── Dockerfile

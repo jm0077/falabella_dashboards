@@ -1,10 +1,10 @@
+from dash import html, dcc, no_update
 from dash.dependencies import Input, Output, State
 import requests
 from flask import session
 import pandas as pd
 import plotly.graph_objs as go
 from config import BACKEND_ENDPOINT
-from dash import html
 
 def register_callbacks(app):
     @app.callback(
@@ -23,7 +23,7 @@ def register_callbacks(app):
     )
     def update_latest_period(pathname, _):
         if pathname != '/dashboard/falabella/':
-            return dash.no_update
+            return no_update
         
         user_id = session.get('user_id')
         if not user_id:
@@ -109,7 +109,7 @@ def register_callbacks(app):
     )
     def update_graph(pathname, _):
         if pathname != '/dashboard/falabella/':
-            return dash.no_update
+            return no_update
         
         user_id = session.get('user_id')
         if not user_id:

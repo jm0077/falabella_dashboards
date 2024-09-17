@@ -1,14 +1,18 @@
-from flask import Flask
-from flask_login import LoginManager
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager, login_required, logout_user
 from dash import Dash
 from config import FLASK_SECRET_KEY, DASH_ASSETS_FOLDER, DASH_EXTERNAL_STYLESHEETS, OIDC_CLIENT_SECRETS
 from .dashboards.dashboard_factory import create_dashboards
-from .auth_setup import setup_oauth  # Importar la configuración de OAuth
+from .auth_setup import setup_oauth
 import json
+import logging
 
 def create_app():
     server = Flask(__name__)
     server.config['SECRET_KEY'] = FLASK_SECRET_KEY
+    
+    # Configurar logging
+    logging.basicConfig(level=logging.INFO)
     
     # Cargar los secretos del cliente OIDC
     with open(OIDC_CLIENT_SECRETS) as f:
@@ -35,7 +39,13 @@ def create_app():
     from app.auth.routes import auth_bp
     server.register_blueprint(auth_bp)
 
-    # Crear instancia de Dash
+    # La ruta de logout ahora usa la función del blueprint de auth
+    @server.route('/logout')
+    @login_required
+    def logout():
+        logging.info("Main logout route accessed")
+        return redirect(url_for('auth.logout'))
+							 
     app = Dash(
         __name__,
         server=server,
