@@ -59,6 +59,16 @@ def create_dashboards(app, oauth):
         if n_clicks:
             return '/logout'
 
+    @app.callback(
+        Output("navbar-collapse", "is_open"),
+        [Input("navbar-toggler", "n_clicks")],
+        [State("navbar-collapse", "is_open")],
+    )
+    def toggle_navbar_collapse(n, is_open):
+        if n:
+            return not is_open
+        return is_open
+
     # Ruta para manejar el acceso no autorizado
     @app.server.errorhandler(401)
     def unauthorized(error):
