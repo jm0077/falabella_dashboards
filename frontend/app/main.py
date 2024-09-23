@@ -37,14 +37,7 @@ def create_app():
 
     # Registrar Blueprint de autenticación
     from app.auth.routes import auth_bp
-    server.register_blueprint(auth_bp)
-
-    # La ruta de logout ahora usa la función del blueprint de auth
-    @server.route('/logout')
-    @login_required
-    def logout():
-        logging.info("Main logout route accessed")
-        return redirect(url_for('auth.logout'))
+    server.register_blueprint(auth_bp, url_prefix='/auth')  # Mantener el prefijo '/auth'
 							 
     app = Dash(
         __name__,
@@ -57,6 +50,11 @@ def create_app():
 
     # Crear y registrar dashboards
     create_dashboards(app, oauth)
+
+    # Añadir una ruta para la raíz que redirija a /dashboard/
+    @server.route('/')
+    def index():
+        return redirect('/dashboard/')
 
     return server, app
 

@@ -19,7 +19,6 @@ def create_dashboards(app, oauth):
     # Crear un layout principal para Dash
     app.layout = html.Div([
         dcc.Location(id='url', refresh=True),
-        dcc.Location(id='logout-redirect', refresh=True),
         html.Div(id='navbar-container'),
         html.Div(id='page-content')
     ])
@@ -47,17 +46,10 @@ def create_dashboards(app, oauth):
             return create_falabella_dashboard()
         elif pathname == '/dashboard/scotiabank/':
             return create_scotiabank_dashboard()
+        elif pathname == '/auth/logout':
+            return dcc.Location(pathname="/auth/logout", id="redirect-to-logout")
         else:
             return create_home_layout()
-
-    @app.callback(
-        Output('logout-redirect', 'pathname'),
-        Input('navbar-logout', 'n_clicks'),
-        prevent_initial_call=True
-    )
-    def logout_redirect(n_clicks):
-        if n_clicks:
-            return '/logout'
 
     @app.callback(
         Output("navbar-collapse", "is_open"),

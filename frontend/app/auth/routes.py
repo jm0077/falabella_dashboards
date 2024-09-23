@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, flash, session, current_app, render_template, request
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 from .models import User
 import logging
 from urllib.parse import urlencode
@@ -10,6 +10,8 @@ auth_bp = Blueprint('auth', __name__)
 # Ruta de login que redirige a Keycloak
 @auth_bp.route('/login', methods=['GET'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('auth.index'))
     redirect_uri = url_for('auth.auth', _external=True, _scheme='https')
     keycloak = current_app.config['keycloak']  # Acceder a keycloak desde current_app
     return keycloak.authorize_redirect(redirect_uri)
