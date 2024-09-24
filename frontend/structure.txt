@@ -19,7 +19,8 @@ project_root/
 │   │   │   └── callbacks.py
 │   │   ├── dashboard_factory.py
 │   │   ├── navbar.py
-│   │   └── home_layout.py  # Nuevo archivo
+│   │   ├── home_layout.py
+│   │   └── my_account_layout.py  # Nuevo archivo
 │   └── static/
 │       ├── css/
 │       ├── js/

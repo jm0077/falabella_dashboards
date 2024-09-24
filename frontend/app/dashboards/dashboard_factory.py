@@ -6,6 +6,7 @@ from .falabella import create_falabella_dashboard, register_falabella_callbacks
 from .scotiabank import create_scotiabank_dashboard, register_scotiabank_callbacks
 from .navbar import create_navbar
 from .home_layout import create_home_layout
+from .my_account_layout import create_my_account_layout
 
 def create_dashboards(app, oauth):
     def protect_dashviews(app):
@@ -48,6 +49,8 @@ def create_dashboards(app, oauth):
             return create_scotiabank_dashboard()
         elif pathname == '/auth/logout':
             return dcc.Location(pathname="/auth/logout", id="redirect-to-logout")
+        elif pathname == '/dashboard/my-account/':  # Añadir esta condición
+            return create_my_account_layout()
         else:
             return create_home_layout()
 

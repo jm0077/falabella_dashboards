@@ -317,3 +317,60 @@ body {
     height: 100%;
   }
 }
+
+/* Estilos adicionales para la página de Mi Cuenta */
+.account-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.account-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,.15);
+}
+
+.account-card .card-body {
+  padding: 1.5rem;
+}
+
+.account-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.account-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.account-card .card-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.account-card .bi-chevron-right {
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+@media (max-width: 767px) {
+  .account-card .card-title {
+    font-size: 1rem;
+  }
+
+  .account-card .card-text {
+    font-size: 0.8rem;
+  }
+
+  .account-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Asegurarse de que la fuente Montserrat se aplique a todos los elementos */
+body, h1, h2, h3, h4, h5, h6, p, span, a, button {
+  font-family: 'Montserrat', sans-serif;
+}

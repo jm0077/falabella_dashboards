@@ -15,7 +15,7 @@ def create_navbar():
                     dbc.Nav(
                         [
                             dbc.NavItem(dbc.NavLink([html.Img(src="/static/img/home-icon.svg", height="20px", className="me-2 d-none d-md-inline"), "Inicio"], href="/dashboard/", id="navbar-home")),
-                            dbc.NavItem(dbc.NavLink([html.Img(src="/static/img/user-icon.svg", height="20px", className="me-2 d-none d-md-inline"), "Mi Cuenta"], href="#", id="navbar-account")),
+                            dbc.NavItem(dbc.NavLink([html.Img(src="/static/img/user-icon.svg", height="20px", className="me-2 d-none d-md-inline"), "Mi Cuenta"], href="/dashboard/my-account/", id="navbar-account")),
                             dbc.NavItem(dbc.NavLink([html.Img(src="/static/img/exit-icon.svg", height="20px", className="me-2 d-none d-md-inline"), "Salir"], href="/auth/logout", id="navbar-logout", external_link=True)),
                         ],
                         className="ms-auto",
