@@ -6,9 +6,10 @@ from .falabella import create_falabella_dashboard, register_falabella_callbacks
 from .scotiabank import create_scotiabank_dashboard, register_scotiabank_callbacks
 from .navbar import create_navbar
 from .home_layout import create_home_layout
-from .my_account_layout import create_my_account_layout
+from .my_account import create_my_account_layout
+from .my_account.personal_info import create_personal_info_layout, register_callbacks as register_personal_info_callbacks
 
-def create_dashboards(app, oauth):
+def create_dashboards(app):
     def protect_dashviews(app):
         for view_func in app.server.view_functions:
             if view_func.startswith('/dashboard'):
@@ -26,6 +27,7 @@ def create_dashboards(app, oauth):
 
     register_falabella_callbacks(app)
     register_scotiabank_callbacks(app)
+    register_personal_info_callbacks(app)
 
     @app.callback(
         Output('navbar-container', 'children'),
@@ -49,8 +51,10 @@ def create_dashboards(app, oauth):
             return create_scotiabank_dashboard()
         elif pathname == '/auth/logout':
             return dcc.Location(pathname="/auth/logout", id="redirect-to-logout")
-        elif pathname == '/dashboard/my-account/':  # Añadir esta condición
+        elif pathname == '/dashboard/my-account/':
             return create_my_account_layout()
+        elif pathname == '/dashboard/my-account/personal-info/':
+            return create_personal_info_layout()
         else:
             return create_home_layout()
 

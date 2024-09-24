@@ -322,6 +322,7 @@ body {
 .account-card {
   transition: all 0.3s ease;
   cursor: pointer;
+  height: 100%;  /* Asegura que todas las tarjetas tengan la misma altura */
 }
 
 .account-card:hover {
@@ -331,6 +332,10 @@ body {
 
 .account-card .card-body {
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .account-icon {
@@ -355,15 +360,26 @@ body {
   color: #007bff;
 }
 
+/* Asegurar que el ícono de chevron sea visible */
+.account-card .card-body a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-decoration: none;
+}
+
+.account-card .card-body a:hover {
+  text-decoration: none;
+}
+
 @media (max-width: 767px) {
   .account-card .card-title {
     font-size: 1rem;
   }
-
   .account-card .card-text {
     font-size: 0.8rem;
   }
-
   .account-icon {
     width: 30px;
     height: 30px;
@@ -373,4 +389,61 @@ body {
 /* Asegurarse de que la fuente Montserrat se aplique a todos los elementos */
 body, h1, h2, h3, h4, h5, h6, p, span, a, button {
   font-family: 'Montserrat', sans-serif;
+}
+
+/* Estilos para la página de Datos Personales */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-control {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.form-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+#guardar-datos, #volver-datos {
+  margin-top: 1rem;
+}
+
+#mensaje-resultado {
+  margin-top: 1rem;
+}
+
+/* Asegurarse de que la fuente Montserrat se aplique a todos los elementos */
+body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, label {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Estilos para el ícono de chevron */
+.bi-chevron-right {
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+/* Asegurar que el ícono de chevron sea visible */
+.account-card .card-body a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.account-card .card-body a:hover {
+  text-decoration: none;
+}
+
+/* Responsive styles */
+@media (max-width: 767px) {
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  #guardar-datos, #volver-datos {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }

@@ -21,7 +21,8 @@ def create_app():
     # Configurar OAuth usando auth_setup
     oauth, keycloak = setup_oauth(server)
 
-    # Almacenar keycloak en la configuración de la app para usarlo en otros lugares
+    # Almacenar oauth y keycloak en la configuración de la app para usarlos en otros lugares
+    server.config['oauth'] = oauth
     server.config['keycloak'] = keycloak
 
     # Configurar Flask-Login
@@ -49,7 +50,7 @@ def create_app():
     )
 
     # Crear y registrar dashboards
-    create_dashboards(app, oauth)
+    create_dashboards(app)
 
     # Añadir una ruta para la raíz que redirija a /dashboard/
     @server.route('/')

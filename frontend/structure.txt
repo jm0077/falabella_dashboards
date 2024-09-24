@@ -9,6 +9,9 @@ project_root/
 │   │   └── models.py
 │   ├── dashboards/
 │   │   ├── __init__.py
+│   │   ├── dashboard_factory.py
+│   │   ├── navbar.py
+│   │   ├── home_layout.py
 │   │   ├── falabella/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
@@ -17,10 +20,12 @@ project_root/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
 │   │   │   └── callbacks.py
-│   │   ├── dashboard_factory.py
-│   │   ├── navbar.py
-│   │   ├── home_layout.py
-│   │   └── my_account_layout.py  # Nuevo archivo
+│   │   └── my_account/
+│   │       ├── __init__.py
+│   │       ├── layout.py
+│   │       └── personal_info/
+│   │           ├── __init__.py
+│   │           └── layout.py
 │   └── static/
 │       ├── css/
 │       ├── js/
