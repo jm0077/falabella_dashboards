@@ -35,10 +35,14 @@ def auth():
     # Autenticar al usuario con Flask-Login
     user_id = userinfo['sub']  # El 'sub' es el ID único del usuario en Keycloak
     user = User(user_id)
+    user.first_name = userinfo.get('given_name')
+    user.last_name = userinfo.get('family_name')
+    user.email = userinfo.get('email')
     login_user(user)
 
     # Guardar información del usuario en la sesión
     session['user'] = userinfo
+    session['access_token'] = token['access_token']
     session['id_token'] = token.get('id_token')  # Guardar el ID token
     session['user_id'] = user_id
 

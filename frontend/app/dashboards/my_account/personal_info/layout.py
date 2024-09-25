@@ -50,8 +50,7 @@ def register_callbacks(app):
     )
     def load_user_data(pathname):
         if pathname == "/dashboard/my-account/personal-info/" and current_user.is_authenticated:
-            user = User.get(current_user.id)
-            return user.first_name, user.last_name, user.email
+            return current_user.first_name, current_user.last_name, current_user.email
         return "", "", ""
 
     @app.callback(
@@ -63,7 +62,9 @@ def register_callbacks(app):
     )
     def update_user_data(n_clicks, nombre, apellido, email):
         if n_clicks and current_user.is_authenticated:
-            user = User.get(current_user.id)
-            user.update(first_name=nombre, last_name=apellido, email=email)
-            return dbc.Alert("Datos actualizados correctamente", color="success")
+            try:
+                current_user.update(first_name=nombre, last_name=apellido, email=email)
+                return dbc.Alert("Datos actualizados correctamente", color="success")
+            except Exception as e:
+                return dbc.Alert(f"Error al actualizar los datos: {str(e)}", color="danger")
         return ""

@@ -25,7 +25,8 @@ project_root/
 │   │       ├── layout.py
 │   │       └── personal_info/
 │   │           ├── __init__.py
-│   │           └── layout.py
+│   │           ├── layout.py
+│   │           └── callbacks.py
 │   └── static/
 │       ├── css/
 │       ├── js/
