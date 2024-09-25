@@ -8,7 +8,8 @@ DASH_ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), 'app', 'static')
 DASH_EXTERNAL_STYLESHEETS = [
     dbc.themes.BOOTSTRAP,
     '/static/css/styles.css',
-    'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap'
+    'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap',
+    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css'
 ]
 
 # Configuraciones adicionales

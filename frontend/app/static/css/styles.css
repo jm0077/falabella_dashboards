@@ -322,7 +322,7 @@ body {
 .account-card {
   transition: all 0.3s ease;
   cursor: pointer;
-  height: 100%;  /* Asegura que todas las tarjetas tengan la misma altura */
+  height: 100%;
 }
 
 .account-card:hover {
@@ -332,45 +332,55 @@ body {
 
 .account-card .card-body {
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   height: 100%;
 }
 
-.account-icon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
-
-.account-card .card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.account-card .card-text {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.account-card .bi-chevron-right {
-  font-size: 1.2rem;
-  color: #007bff;
-}
-
-/* Asegurar que el ícono de chevron sea visible */
 .account-card .card-body a {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   text-decoration: none;
+  height: 100%;
 }
 
-.account-card .card-body a:hover {
-  text-decoration: none;
+.account-card .card-body a > div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.card-content {
+  flex-grow: 1;
+  padding: 0 1rem;
+  overflow: hidden;
+}
+
+.account-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.account-card .card-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.account-arrow {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 767px) {
@@ -383,6 +393,13 @@ body {
   .account-icon {
     width: 30px;
     height: 30px;
+  }
+  .account-arrow {
+    width: 16px;
+    height: 16px;
+  }
+  .card-content {
+    padding: 0 0.5rem;
   }
 }
 
@@ -418,24 +435,6 @@ body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, label {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Estilos para el ícono de chevron */
-.bi-chevron-right {
-  font-size: 1.2rem;
-  color: #007bff;
-}
-
-/* Asegurar que el ícono de chevron sea visible */
-.account-card .card-body a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.account-card .card-body a:hover {
-  text-decoration: none;
-}
-
 /* Responsive styles */
 @media (max-width: 767px) {
   .form-group {
@@ -447,3 +446,5 @@ body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, label {
     margin-bottom: 0.5rem;
   }
 }
+
+
