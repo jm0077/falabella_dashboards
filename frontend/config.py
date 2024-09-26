@@ -23,3 +23,4 @@ LOGIN_DISABLED = False
 # Configuración de Keycloak OpenID Connect
 OIDC_CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 OIDC_SCOPES = ['openid', 'email', 'profile']
+CLIENT_SCOPE = 'manage-users'

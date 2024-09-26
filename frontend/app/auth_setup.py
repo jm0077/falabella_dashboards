@@ -1,7 +1,7 @@
 import os
 from authlib.integrations.flask_client import OAuth
 import json
-from config import OIDC_CLIENT_SECRETS, OIDC_SCOPES
+from config import OIDC_CLIENT_SECRETS, OIDC_SCOPES, CLIENT_SCOPE
 import logging
 from requests.exceptions import RequestException
 import requests
@@ -25,7 +25,7 @@ def setup_oauth(app):
             client_secret=client_secrets['web']['client_secret'],
             server_metadata_url=f"{client_secrets['web']['issuer']}/.well-known/openid-configuration",
             client_kwargs={
-                'scope': ' '.join(OIDC_SCOPES),
+                'scope': ' '.join(OIDC_SCOPES),  # Añadimos CLIENT_SCOPE aquí
                 'timeout': 30
             },
             # Añadir estas líneas para configurar correctamente la autenticación

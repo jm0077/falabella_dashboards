@@ -62,9 +62,9 @@ def register_callbacks(app):
     )
     def update_user_data(n_clicks, nombre, apellido, email):
         if n_clicks and current_user.is_authenticated:
-            try:
-                current_user.update(first_name=nombre, last_name=apellido, email=email)
-                return dbc.Alert("Datos actualizados correctamente", color="success")
-            except Exception as e:
-                return dbc.Alert(f"Error al actualizar los datos: {str(e)}", color="danger")
+            success, message = current_user.update(first_name=nombre, last_name=apellido, email=email)
+            if success:
+                return dbc.Alert(message, color="success", dismissable=True)
+            else:
+                return dbc.Alert(message, color="danger", dismissable=True)
         return ""
