@@ -23,7 +23,10 @@ project_root/
 │   │   └── my_account/
 │   │       ├── __init__.py
 │   │       ├── layout.py
-│   │       └── personal_info/
+│   │       ├── personal_info/
+│   │       │   ├── __init__.py
+│   │       │   └── layout.py
+│   │       └── security/
 │   │           ├── __init__.py
 │   │           └── layout.py
 │   └── static/
@@ -31,5 +34,6 @@ project_root/
 │       ├── js/
 │       └── img/
 ├── config.py
+├── client_secrets.json
 ├── requirements.txt
 └── Dockerfile

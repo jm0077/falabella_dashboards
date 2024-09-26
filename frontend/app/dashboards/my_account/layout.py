@@ -5,7 +5,7 @@ def create_my_account_layout():
     account_options = [
         {"title": "Datos personales", "description": "Edita tu nombre, apellidos y correo electrónico", "icon": "datos-personales.svg", "href": "/dashboard/my-account/personal-info/"},
         {"title": "Configuración", "description": "Configura tus tarjetas y notificaciones", "icon": "configuracion.svg", "href": "#"},
-        {"title": "Seguridad", "description": "Cambia tu contraseña", "icon": "seguridad.svg", "href": "#"},
+        {"title": "Seguridad", "description": "Cambia tu contraseña", "icon": "seguridad.svg", "href": "/dashboard/my-account/security/"},
         {"title": "Documentos", "description": "Estados de Cuenta y otros documentos", "icon": "documentos.svg", "href": "#"},
         {"title": "Centro de ayuda", "description": "Preguntas frecuentes, haz una consulta o déjanos un comentario", "icon": "centro-ayuda.svg", "href": "#"}
     ]
