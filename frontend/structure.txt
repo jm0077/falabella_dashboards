@@ -26,7 +26,10 @@ project_root/
 │   │       ├── personal_info/
 │   │       │   ├── __init__.py
 │   │       │   └── layout.py
-│   │       └── security/
+│   │       ├── security/
+│   │       │   ├── __init__.py
+│   │       │   └── layout.py
+│   │       └── help_center/
 │   │           ├── __init__.py
 │   │           └── layout.py
 │   └── static/
