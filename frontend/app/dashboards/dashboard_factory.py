@@ -9,7 +9,10 @@ from .home_layout import create_home_layout
 from .my_account import create_my_account_layout
 from .my_account.personal_info import create_personal_info_layout, register_callbacks as register_personal_info_callbacks
 from .my_account.security.layout import create_security_layout, register_callbacks as register_security_callbacks
-from .my_account.help_center.layout import create_help_center_layout  # Add this line
+from .my_account.help_center.layout import create_help_center_layout
+from .my_account.configuration.layout import create_configuration_layout
+from .my_account.configuration.cards.layout import create_cards_layout
+from .my_account.configuration.notifications.layout import create_notifications_layout
 
 def create_dashboards(app):
     def protect_dashviews(app):
@@ -60,8 +63,14 @@ def create_dashboards(app):
             return create_personal_info_layout()
         elif pathname == '/dashboard/my-account/security/':
             return create_security_layout()
-        elif pathname == '/dashboard/my-account/help-center/':  # Add this condition
+        elif pathname == '/dashboard/my-account/help-center/':
             return create_help_center_layout()
+        elif pathname == '/dashboard/my-account/configuration/':
+            return create_configuration_layout()
+        elif pathname == '/dashboard/my-account/configuration/cards/':
+            return create_cards_layout()
+        elif pathname == '/dashboard/my-account/configuration/notifications/':
+            return create_notifications_layout()
         else:
             return create_home_layout()
 

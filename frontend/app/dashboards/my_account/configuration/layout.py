@@ -1,16 +1,13 @@
-from dash import html, dcc
+from dash import html
 import dash_bootstrap_components as dbc
 
-def create_my_account_layout():
-    account_options = [
-        {"title": "Datos personales", "description": "Edita tu nombre, apellidos y correo electrónico", "icon": "datos-personales.svg", "href": "/dashboard/my-account/personal-info/"},
-        {"title": "Configuración", "description": "Configura tus tarjetas y notificaciones", "icon": "configuracion.svg", "href": "/dashboard/my-account/configuration/"},
-        {"title": "Seguridad", "description": "Cambia tu contraseña", "icon": "seguridad.svg", "href": "/dashboard/my-account/security/"},
-        {"title": "Documentos", "description": "Estados de Cuenta y otros documentos", "icon": "documentos.svg", "href": "#"},
-        {"title": "Centro de ayuda", "description": "Preguntas frecuentes, haz una consulta o déjanos un comentario", "icon": "centro-ayuda.svg", "href": "/dashboard/my-account/help-center/"}
+def create_configuration_layout():
+    configuration_options = [
+        {"title": "Tarjetas", "description": "Bloquea tu tarjeta, activa o desactiva compras por Internet, en el extranjero y retiros en cajeros", "icon": "tarjetas.svg", "href": "/dashboard/my-account/configuration/cards/"},
+        {"title": "Notificaciones", "description": "Entérate cuando se hagan operaciones con tus cuentas", "icon": "notificaciones.svg", "href": "/dashboard/my-account/configuration/notifications/"},
     ]
 
-    account_cards = [
+    configuration_cards = [
         dbc.Col(
             dbc.Card(
                 dbc.CardBody([
@@ -29,15 +26,15 @@ def create_my_account_layout():
             ),
             md=6,
             className="mb-4"
-        ) for option in account_options
+        ) for option in configuration_options
     ]
 
     layout = dbc.Container([
         dbc.Row([
             dbc.Col([
-                html.H2("Mi Cuenta", className="mb-4"),
-                dbc.Row(account_cards),
-                dbc.Button("Volver", href="/dashboard/", color="primary", className="mt-3"),
+                html.H2("Configuración", className="mb-4"),
+                dbc.Row(configuration_cards),
+                dbc.Button("Volver", href="/dashboard/my-account/", color="primary", className="mt-3"),
             ], md=10, lg=8, className="mx-auto")
         ], className="justify-content-center")
     ], fluid=True, className="py-4")
