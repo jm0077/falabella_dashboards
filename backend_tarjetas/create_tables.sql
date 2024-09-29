@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS banco (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS usuario_banco (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId VARCHAR(36),
+    banco_id INT,
+    habilitado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (banco_id) REFERENCES banco(id)
+);
