@@ -29,9 +29,16 @@ project_root/
 │   │       ├── security/
 │   │       │   ├── __init__.py
 │   │       │   └── layout.py
-│   │       └── help_center/
+│   │       ├── help_center/
+│   │       │   ├── __init__.py
+│   │       │   └── layout.py
+│   │       └── configuration/
 │   │           ├── __init__.py
-│   │           └── layout.py
+│   │           ├── layout.py
+│   │           └── cards/
+│   │               ├── __init__.py
+│   │               ├── layout.py
+│   │               └── callbacks.py
 │   └── static/
 │       ├── css/
 │       ├── js/

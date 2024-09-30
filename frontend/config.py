@@ -24,3 +24,6 @@ LOGIN_DISABLED = False
 OIDC_CLIENT_SECRETS = os.path.join(os.path.dirname(__file__), 'client_secrets.json')
 OIDC_SCOPES = ['openid', 'email', 'profile']
 CLIENT_SCOPE = 'manage-users'
+
+# Nuevo endpoint para la API de tarjetas
+CARDS_API_ENDPOINT = "https://backend-tarjetas-service-543790252426.southamerica-west1.run.app/api"

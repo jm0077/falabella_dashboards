@@ -12,6 +12,7 @@ from .my_account.security.layout import create_security_layout, register_callbac
 from .my_account.help_center.layout import create_help_center_layout
 from .my_account.configuration.layout import create_configuration_layout
 from .my_account.configuration.cards.layout import create_cards_layout
+from .my_account.configuration.cards.callbacks import register_callbacks as register_cards_callbacks
 from .my_account.configuration.notifications.layout import create_notifications_layout
 
 def create_dashboards(app):
@@ -34,6 +35,7 @@ def create_dashboards(app):
     register_scotiabank_callbacks(app)
     register_personal_info_callbacks(app)
     register_security_callbacks(app)
+    register_cards_callbacks(app)
 
     @app.callback(
         Output('navbar-container', 'children'),

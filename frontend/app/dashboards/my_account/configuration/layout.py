@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 
 def create_configuration_layout():
     configuration_options = [
-        {"title": "Tarjetas", "description": "Bloquea tu tarjeta, activa o desactiva compras por Internet, en el extranjero y retiros en cajeros", "icon": "tarjetas.svg", "href": "/dashboard/my-account/configuration/cards/"},
+        {"title": "Tarjetas", "description": "Selecciona las tarjetas que deseas incluir en el panel de tu centro financiero", "icon": "tarjetas.svg", "href": "/dashboard/my-account/configuration/cards/"},
         {"title": "Notificaciones", "description": "Entérate cuando se hagan operaciones con tus cuentas", "icon": "notificaciones.svg", "href": "/dashboard/my-account/configuration/notifications/"},
     ]
 

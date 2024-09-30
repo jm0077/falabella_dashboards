@@ -49,7 +49,7 @@ def get_usuario_bancos(session):
 def update_usuario_banco(session):
     data = request.json
     user_id = data.get('userId')
-    banco_id = data.get('bancoId')
+    banco_id = data.get('banco_id')
     habilitado = data.get('habilitado')
 
     if not all([user_id, banco_id, habilitado is not None]):
