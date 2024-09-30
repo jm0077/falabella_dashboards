@@ -1,4 +1,4 @@
-from dash import Input, Output, State, callback_context, ALL, html
+from dash import Input, Output, State, callback_context, ALL, html, MATCH
 from dash.exceptions import PreventUpdate
 import requests
 from flask import current_app
@@ -39,34 +39,32 @@ def register_callbacks(app):
             return html.Div(f"Error al cargar las tarjetas: {str(e)}", className="text-danger")
 
     @app.callback(
-        Output("flash-message", "children"),
-        Input({"type": "bank-switch", "index": ALL}, "value"),
-        State({"type": "bank-switch", "index": ALL}, "id"),
+        Output({"type": "bank-switch", "index": MATCH}, "value"),
+        Output({"type": "flash-message", "index": MATCH}, "children"),
+        Input({"type": "bank-switch", "index": MATCH}, "value"),
+        State({"type": "bank-switch", "index": MATCH}, "id"),
         State("url", "pathname"),
         prevent_initial_call=True
     )
-    def update_card_status(values, ids, pathname):
+    def update_card_status(value, id, pathname):
         ctx = callback_context
         if not ctx.triggered or pathname != "/dashboard/my-account/configuration/cards/":
             raise PreventUpdate
 
-        triggered_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        triggered_id = json.loads(triggered_id)
-        bank_id = triggered_id['index']
-        new_value = ctx.triggered[0]['value']
-
+        bank_id = id['index']
         user_id = current_user.id
         api_url = f"{CARDS_API_ENDPOINT}/usuario-bancos"
 
         data = {
             "userId": user_id,
             "banco_id": bank_id,
-            "habilitado": new_value
+            "habilitado": value
         }
 
         try:
             response = requests.put(api_url, json=data)
             response.raise_for_status()
-            return dbc.Alert("Estado de la tarjeta actualizado correctamente", color="success", dismissable=True, duration=4000)
+            return value, dbc.Alert("Actualizado correctamente", color="success", dismissable=True, duration=4000)
         except requests.RequestException as e:
-            return dbc.Alert(f"Error al actualizar el estado de la tarjeta: {str(e)}", color="danger", dismissable=True, duration=4000)
+            # En caso de error, revertimos el switch a su estado anterior
+            return not value, dbc.Alert(f"Error al actualizar el estado de la tarjeta: {str(e)}", color="danger", dismissable=True, duration=4000)
