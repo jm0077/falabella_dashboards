@@ -1,16 +1,13 @@
-from dash import html, dcc
+from dash import html
 import dash_bootstrap_components as dbc
 
-def create_my_account_layout():
-    account_options = [
-        {"title": "Datos personales", "description": "Edita tu nombre, apellidos y correo electrónico", "icon": "datos-personales.svg", "href": "/dashboard/my-account/personal-info/"},
-        {"title": "Configuración", "description": "Configura tus tarjetas y notificaciones", "icon": "configuracion.svg", "href": "/dashboard/my-account/configuration/"},
-        {"title": "Seguridad", "description": "Cambia tu contraseña", "icon": "seguridad.svg", "href": "/dashboard/my-account/security/"},
-        {"title": "Documentos", "description": "Estados de Cuenta y otros documentos", "icon": "documentos.svg", "href": "/dashboard/my-account/documents/"},
-        {"title": "Centro de ayuda", "description": "Preguntas frecuentes, haz una consulta o déjanos un comentario", "icon": "centro-ayuda.svg", "href": "/dashboard/my-account/help-center/"}
+def create_documents_layout():
+    document_options = [
+        {"title": "Cargar Documentos", "description": "Sube tus estados de cuenta y otros documentos importantes", "icon": "documentos.svg", "href": "#"},
+        {"title": "Consulta de Documentos", "description": "Revisa y descarga tus documentos almacenados", "icon": "documentos.svg", "href": "#"},
     ]
 
-    account_cards = [
+    document_cards = [
         dbc.Col(
             dbc.Card(
                 dbc.CardBody([
@@ -29,15 +26,15 @@ def create_my_account_layout():
             ),
             md=6,
             className="mb-4"
-        ) for option in account_options
+        ) for option in document_options
     ]
 
     layout = dbc.Container([
         dbc.Row([
             dbc.Col([
-                html.H2("Mi Cuenta", className="mb-4"),
-                dbc.Row(account_cards),
-                dbc.Button("Volver", href="/dashboard/", color="primary", className="mt-3"),
+                html.H2("Documentos", className="mb-4"),
+                dbc.Row(document_cards),
+                dbc.Button("Volver", href="/dashboard/my-account/", color="primary", className="mt-3"),
             ], md=10, lg=8, className="mx-auto")
         ], className="justify-content-center")
     ], fluid=True, className="py-4")
