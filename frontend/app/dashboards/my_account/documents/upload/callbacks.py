@@ -1,6 +1,6 @@
 # app/dashboards/my_account/documents/upload/callbacks.py
 
-from dash import Input, Output, State, callback_context, html, ALL
+from dash import Input, Output, State, callback_context, html, ALL, no_update
 from dash.exceptions import PreventUpdate
 import requests
 import dash_bootstrap_components as dbc
@@ -11,9 +11,9 @@ from config import CARDS_API_ENDPOINT, GCS_BUCKET_NAME
 
 def register_upload_callbacks(app):
     @app.callback(
-    Output("bank-selection", "options"),
-    Input("url", "pathname")
-)
+        Output("bank-selection", "options"),
+        Input("url", "pathname")
+    )
     def load_banks(pathname):
         if pathname != "/dashboard/my-account/documents/upload/":
             raise PreventUpdate
@@ -27,7 +27,10 @@ def register_upload_callbacks(app):
             user_banks = response.json()
 
             options = [
-                {"label": bank['banco_nombre'], "value": bank['banco_nombre']}
+                {
+                    "label": html.Img(src=f"/static/img/{bank['banco_nombre'].lower().replace(' ', '_')}_logo.svg", height="30px"),
+                    "value": bank['banco_nombre']
+                }
                 for bank in user_banks
             ]
 
@@ -41,6 +44,7 @@ def register_upload_callbacks(app):
         Output("flash-message", "children"),
         Output("flash-message", "is_open"),
         Output("flash-message", "color"),
+        Output("upload-document", "contents"),
         Input("upload-document", "contents"),
         State("upload-document", "filename"),
     )
@@ -53,23 +57,26 @@ def register_upload_callbacks(app):
                 None,
                 "Por favor, sube un archivo PDF.",
                 True,
-                "danger"
+                "danger",
+                None  # Clear the upload contents
             )
 
         return (
             html.Div(f"Archivo seleccionado: {filename}"),
             None,
             False,
-            None
+            None,
+            no_update
         )
 
     @app.callback(
         Output("loading-output-upload", "children"),
         Output("bank-selection", "value"),
-        Output("upload-document", "contents"),
+        Output("upload-document", "contents", allow_duplicate=True),
         Output("flash-message", "children", allow_duplicate=True),
         Output("flash-message", "is_open", allow_duplicate=True),
         Output("flash-message", "color", allow_duplicate=True),
+        Output("output-document-upload", "children", allow_duplicate=True),
         Input("upload-button", "n_clicks"),
         State("upload-document", "contents"),
         State("upload-document", "filename"),
@@ -85,10 +92,10 @@ def register_upload_callbacks(app):
             raise PreventUpdate
 
         if not selected_bank:
-            return None, no_update, no_update, "Por favor, selecciona un banco antes de cargar el documento.", True, "danger"
+            return None, no_update, no_update, "Por favor, selecciona un banco antes de cargar el documento.", True, "danger", no_update
 
         if not filename.lower().endswith('.pdf'):
-            return None, no_update, no_update, "Por favor, sube un archivo PDF.", True, "danger"
+            return None, no_update, no_update, "Por favor, sube un archivo PDF.", True, "danger", no_update
 
         try:
             # Decodificar el contenido del archivo
@@ -107,7 +114,7 @@ def register_upload_callbacks(app):
             blob = bucket.blob(file_path)
             blob.upload_from_string(decoded, content_type='application/pdf')
 
-            return None, None, None, "Documento cargado exitosamente.", True, "success"
+            return None, None, None, "Documento cargado exitosamente.", True, "success", None  # Clear the selected file display
 
         except Exception as e:
-            return None, no_update, no_update, f"Error al cargar el documento: {str(e)}", True, "danger"
+            return None, no_update, no_update, f"Error al cargar el documento: {str(e)}", True, "danger", no_update

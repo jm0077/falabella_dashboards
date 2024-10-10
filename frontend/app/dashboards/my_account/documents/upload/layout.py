@@ -9,9 +9,9 @@ def create_upload_documents_layout():
             dbc.Col([
                 html.H2("Carga de Documentos", className="mb-4"),
                 html.P("Selecciona el banco y sube tu estado de cuenta en formato PDF.", className="mb-4"),
-                dbc.Select(
+                dcc.Dropdown(  # Changed from dbc.Select to dcc.Dropdown
                     id="bank-selection",
-                    options=[],  # Opciones se llenarán dinámicamente
+                    options=[],  # Options will be filled dynamically
                     placeholder="Selecciona un banco",
                     className="mb-4"
                 ),
@@ -37,6 +37,7 @@ def create_upload_documents_layout():
                 html.Div(id='output-document-upload'),
                 dbc.Button("Cargar", id="upload-button", color="primary", className="me-2 mt-3"),
                 dbc.Button("Volver", href="/dashboard/my-account/documents/", color="secondary", className="mt-3"),
+                dbc.Alert(id="flash-message", is_open=False, duration=4000, className="mt-3"),  # Moved inside the column for proper alignment
             ], md=10, lg=8, className="mx-auto")
         ], className="justify-content-center"),
         dcc.Loading(
@@ -44,7 +45,6 @@ def create_upload_documents_layout():
             type="default",
             children=html.Div(id="loading-output-upload")
         ),
-        dbc.Alert(id="flash-message", is_open=False, duration=4000, className="mt-3"),
     ], fluid=True, className="py-4")
 
     return layout
