@@ -480,3 +480,22 @@ body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, label {
         max-height: 40px;
     }
 }
+
+/* Estilos para el dropdown de selección de bancos */
+.Select-control {
+    height: 60px;
+}
+
+.Select-placeholder,
+.Select--single > .Select-control .Select-value {
+    line-height: 60px !important;
+}
+
+.Select-input {
+    height: 60px;
+}
+
+/* Estilos para el mensaje flash */
+.alert {
+    margin-top: 1rem;
+}

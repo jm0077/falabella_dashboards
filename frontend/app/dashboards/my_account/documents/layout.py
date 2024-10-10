@@ -1,9 +1,11 @@
+# app/dashboards/my_account/documents/layout.py
+
 from dash import html
 import dash_bootstrap_components as dbc
 
 def create_documents_layout():
     document_options = [
-        {"title": "Cargar Documentos", "description": "Sube tus estados de cuenta y otros documentos importantes", "icon": "documentos.svg", "href": "#"},
+        {"title": "Cargar Documentos", "description": "Sube tus estados de cuenta y otros documentos importantes", "icon": "documentos.svg", "href": "/dashboard/my-account/documents/upload/"},
         {"title": "Consulta de Documentos", "description": "Revisa y descarga tus documentos almacenados", "icon": "documentos.svg", "href": "#"},
     ]
 

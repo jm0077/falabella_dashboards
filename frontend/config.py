@@ -27,3 +27,6 @@ CLIENT_SCOPE = 'manage-users'
 
 # Nuevo endpoint para la API de tarjetas
 CARDS_API_ENDPOINT = "https://backend-tarjetas-service-543790252426.southamerica-west1.run.app/api"
+
+# Configuración del bucket de GCS
+GCS_BUCKET_NAME = 'custom-curve-431820-e9_cloudbuild'

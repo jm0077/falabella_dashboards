@@ -16,6 +16,8 @@ from .my_account.configuration.cards.callbacks import register_callbacks as regi
 from .my_account.configuration.notifications.layout import create_notifications_layout
 from .my_account.documents.layout import create_documents_layout
 from .my_account.documents.callbacks import register_callbacks as register_documents_callbacks
+from .my_account.documents.upload.layout import create_upload_documents_layout
+from .my_account.documents.upload.callbacks import register_upload_callbacks
 
 def create_dashboards(app):
     def protect_dashviews(app):
@@ -39,6 +41,7 @@ def create_dashboards(app):
     register_security_callbacks(app)
     register_cards_callbacks(app)
     register_documents_callbacks(app)
+    register_upload_callbacks(app)
 
     @app.callback(
         Output('navbar-container', 'children'),
@@ -78,6 +81,8 @@ def create_dashboards(app):
             return create_notifications_layout()
         elif pathname == '/dashboard/my-account/documents/':
             return create_documents_layout()
+        elif pathname == '/dashboard/my-account/documents/upload/':
+            return create_upload_documents_layout()
         else:
             return create_home_layout()
 

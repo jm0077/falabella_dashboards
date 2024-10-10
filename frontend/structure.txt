@@ -26,19 +26,27 @@ project_root/
 │   │       ├── personal_info/
 │   │       │   ├── __init__.py
 │   │       │   └── layout.py
+│   │       ├── configuration/
+│   │       │   ├── __init__.py
+│   │       │   ├── layout.py
+│   │       │   └── cards/
+│   │       │       ├── __init__.py
+│   │       │       ├── layout.py
+│   │       │       └── callbacks.py
 │   │       ├── security/
 │   │       │   ├── __init__.py
 │   │       │   └── layout.py
-│   │       ├── help_center/
+│   │       ├── documents/
 │   │       │   ├── __init__.py
-│   │       │   └── layout.py
-│   │       └── configuration/
+│   │       │   ├── layout.py
+│   │       │   ├── callbacks.py
+│   │       │   └── upload/
+│   │       │       ├── layout.py
+│   │       │       └── callbacks.py
+│   │       └── help_center/
 │   │           ├── __init__.py
-│   │           ├── layout.py
-│   │           └── cards/
-│   │               ├── __init__.py
-│   │               ├── layout.py
-│   │               └── callbacks.py
+│   │           └── layout.py
+│   │
 │   └── static/
 │       ├── css/
 │       ├── js/
