@@ -29,10 +29,13 @@ project_root/
 │   │       ├── configuration/
 │   │       │   ├── __init__.py
 │   │       │   ├── layout.py
-│   │       │   └── cards/
+│   │       │   ├── cards/
+│   │       │   │   ├── __init__.py
+│   │       │   │   ├── layout.py
+│   │       │   │   └── callbacks.py
+│   │       │   └── notifications/
 │   │       │       ├── __init__.py
-│   │       │       ├── layout.py
-│   │       │       └── callbacks.py
+│   │       │       └── layout.py
 │   │       ├── security/
 │   │       │   ├── __init__.py
 │   │       │   └── layout.py
@@ -47,10 +50,13 @@ project_root/
 │   │           ├── __init__.py
 │   │           └── layout.py
 │   │
-│   └── static/
-│       ├── css/
-│       ├── js/
-│       └── img/
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── img/
+│   └── templates/
+│       ├── index.html
+│       └── login.html
 ├── config.py
 ├── client_secrets.json
 ├── requirements.txt

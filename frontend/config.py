@@ -2,7 +2,7 @@ import os
 import secrets
 import dash_bootstrap_components as dbc
 
-BACKEND_ENDPOINT = "https://backend-falabella-app-service-alhjlx25pa-tl.a.run.app/api"
+BACKEND_ENDPOINT = "https://backend-falabella-app-service-913912993840.southamerica-west1.run.app/api"
 FLASK_SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(24))
 DASH_ASSETS_FOLDER = os.path.join(os.path.dirname(__file__), 'app', 'static')
 DASH_EXTERNAL_STYLESHEETS = [
@@ -26,7 +26,7 @@ OIDC_SCOPES = ['openid', 'email', 'profile']
 CLIENT_SCOPE = 'manage-users'
 
 # Nuevo endpoint para la API de tarjetas
-CARDS_API_ENDPOINT = "https://backend-tarjetas-service-543790252426.southamerica-west1.run.app/api"
+CARDS_API_ENDPOINT = "https://backend-tarjetas-service-913912993840.southamerica-west1.run.app/api"
 
 # Configuración del bucket de GCS
-GCS_BUCKET_NAME = 'custom-curve-431820-e9_cloudbuild'
+GCS_BUCKET_NAME = 'account-statements_customers'
