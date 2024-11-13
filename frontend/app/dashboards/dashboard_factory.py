@@ -6,6 +6,7 @@ from .falabella import create_falabella_dashboard, register_falabella_callbacks
 from .scotiabank import create_scotiabank_dashboard, register_scotiabank_callbacks
 from .navbar import create_navbar
 from .home_layout import create_home_layout
+from .home_callbacks import register_home_callbacks
 from .my_account import create_my_account_layout
 from .my_account.personal_info import create_personal_info_layout, register_callbacks as register_personal_info_callbacks
 from .my_account.security.layout import create_security_layout, register_callbacks as register_security_callbacks
@@ -35,6 +36,7 @@ def create_dashboards(app):
         html.Div(id='page-content')
     ])
 
+    register_home_callbacks(app)
     register_falabella_callbacks(app)
     register_scotiabank_callbacks(app)
     register_personal_info_callbacks(app)
