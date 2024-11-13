@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from models import Banco, UsuarioBanco, UsuarioEstado
 import functools
 from config import DB_URL, FLASK_SECRET_KEY
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
@@ -84,6 +85,44 @@ def get_usuario_estado(session):
     
     if not usuario_estado:
         return jsonify({'error': 'No se encontró el estado del usuario'}), 404
+
+    return jsonify({
+        'id': usuario_estado.id,
+        'userId': usuario_estado.userId,
+        'primer_ingreso': usuario_estado.primer_ingreso,
+        'documento_cargado': usuario_estado.documento_cargado,
+        'fecha_primer_ingreso': usuario_estado.fecha_primer_ingreso.isoformat() if usuario_estado.fecha_primer_ingreso else None,
+        'fecha_primera_carga': usuario_estado.fecha_primera_carga.isoformat() if usuario_estado.fecha_primera_carga else None
+    })
+
+@app.route('/api/usuario-estado', methods=['PUT'])
+@with_database_session
+def update_usuario_estado(session):
+    data = request.json
+    user_id = data.get('userId')
+
+    if user_id is None:
+        return jsonify({'error': 'El campo userId es obligatorio'}), 400
+
+    usuario_estado = session.query(UsuarioEstado).filter(UsuarioEstado.userId == user_id).first()
+    if not usuario_estado:
+        return jsonify({'error': 'No se encontró el estado del usuario'}), 404
+
+    primer_ingreso = data.get('primer_ingreso')
+    documento_cargado = data.get('documento_cargado')
+    fecha_primer_ingreso = data.get('fecha_primer_ingreso')
+    fecha_primera_carga = data.get('fecha_primera_carga')
+
+    if primer_ingreso is not None:
+        usuario_estado.primer_ingreso = primer_ingreso
+    if documento_cargado is not None:
+        usuario_estado.documento_cargado = documento_cargado
+    if fecha_primer_ingreso:
+        usuario_estado.fecha_primer_ingreso = datetime.fromisoformat(fecha_primer_ingreso)
+    if fecha_primera_carga:
+        usuario_estado.fecha_primera_carga = datetime.fromisoformat(fecha_primera_carga)
+
+    session.commit()
 
     return jsonify({
         'id': usuario_estado.id,

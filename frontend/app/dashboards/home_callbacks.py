@@ -9,6 +9,7 @@ from .home_layout import (
     create_no_documents_layout,
     create_default_layout
 )
+from datetime import datetime
 
 def get_user_estado(user_id):
     """
@@ -23,9 +24,29 @@ def get_user_estado(user_id):
         print(f"Error getting user status: {str(e)}")
         return None
 
+def update_user_estado(user_id, primer_ingreso, documento_cargado, fecha_primer_ingreso=None, fecha_primera_carga=None):
+    """
+    Actualiza el estado del usuario a través de la API
+    """
+    try:
+        response = requests.put(f"{CARDS_API_ENDPOINT}/usuario-estado", json={
+            "userId": user_id,
+            "primer_ingreso": primer_ingreso,
+            "documento_cargado": documento_cargado,
+            "fecha_primer_ingreso": fecha_primer_ingreso.isoformat() if fecha_primer_ingreso else None,
+            "fecha_primera_carga": fecha_primera_carga.isoformat() if fecha_primera_carga else None
+        })
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception as e:
+        print(f"Error updating user status: {str(e)}")
+        return None
+
 def register_home_callbacks(app):
     @app.callback(
-        Output('user-status-store', 'data'),
+        [Output('user-status-store', 'data'),
+         Output('user-status-updated', 'data')],
         Input('url', 'pathname')
     )
     def fetch_user_status(pathname):
@@ -33,20 +54,36 @@ def register_home_callbacks(app):
         Obtiene el estado del usuario cuando se carga la página
         """
         if not current_user or not current_user.is_authenticated:
-            return None
+            return None, None
             
-        return get_user_estado(current_user.id)
+        user_status = get_user_estado(current_user.id)
+        
+        # Verificar si es el primer ingreso y actualizar el estado del usuario
+        user_status_updated = user_status.copy()
+        if user_status and user_status['primer_ingreso']:
+            user_status_updated['primer_ingreso'] = False
+            
+        return user_status, user_status_updated
 
     @app.callback(
         Output('home-content', 'children'),
-        Input('user-status-store', 'data')
-    )
-    def update_home_content(user_status):
+        [Input('user-status-store', 'data'),
+         Input('user-status-updated', 'data')])
+    def update_home_content(user_status, user_status_updated):
         """
         Actualiza el contenido de la página principal basado en el estado del usuario
         """
         if user_status is None:
             return create_error_layout()
+            
+        # Actualizar el estado del usuario si es necesario
+        if user_status_updated['primer_ingreso'] != user_status['primer_ingreso']:
+            update_user_estado(
+                current_user.id,
+                primer_ingreso=user_status_updated['primer_ingreso'],
+                documento_cargado=user_status_updated['documento_cargado'],
+                fecha_primer_ingreso=datetime.now()
+            )
             
         if user_status['primer_ingreso']:
             return create_first_time_layout()

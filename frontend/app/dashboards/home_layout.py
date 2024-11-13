@@ -9,6 +9,7 @@ def create_home_layout():
     """
     return html.Div([
         dcc.Store(id='user-status-store'),
+        dcc.Store(id='user-status-updated'),
         html.Div(id='home-content')
     ])
 
