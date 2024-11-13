@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, Index, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Float, Date, Text, ForeignKey, Index, Boolean, TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -17,6 +18,16 @@ class UsuarioBanco(Base):
     
     banco = relationship('Banco', backref='usuario_bancos')
 
+class UsuarioEstado(Base):
+    __tablename__ = 'usuario_estado'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    userId = Column(String(36), index=True)
+    primer_ingreso = Column(Boolean, default=True)
+    documento_cargado = Column(Boolean, default=False)
+    fecha_primer_ingreso = Column(TIMESTAMP)
+    fecha_primera_carga = Column(TIMESTAMP)
+
 # Create indices
 Index('idx_usuario_banco_userId', UsuarioBanco.userId)
 Index('idx_banco_id', UsuarioBanco.banco_id)
+Index('idx_usuario_estado_userId', UsuarioEstado.userId)

@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from models import Banco, UsuarioBanco
+from models import Banco, UsuarioBanco, UsuarioEstado
 import functools
 from config import DB_URL, FLASK_SECRET_KEY
 
@@ -71,6 +71,27 @@ def update_usuario_banco(session):
         'banco_id': usuario_banco.banco_id,
         'banco_nombre': usuario_banco.banco.nombre,
         'habilitado': usuario_banco.habilitado
+    })
+
+@app.route('/api/usuario-estado', methods=['GET'])
+@with_database_session
+def get_usuario_estado(session):
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({'error': 'userId es requerido'}), 400
+
+    usuario_estado = session.query(UsuarioEstado).filter(UsuarioEstado.userId == user_id).first()
+    
+    if not usuario_estado:
+        return jsonify({'error': 'No se encontró el estado del usuario'}), 404
+
+    return jsonify({
+        'id': usuario_estado.id,
+        'userId': usuario_estado.userId,
+        'primer_ingreso': usuario_estado.primer_ingreso,
+        'documento_cargado': usuario_estado.documento_cargado,
+        'fecha_primer_ingreso': usuario_estado.fecha_primer_ingreso.isoformat() if usuario_estado.fecha_primer_ingreso else None,
+        'fecha_primera_carga': usuario_estado.fecha_primera_carga.isoformat() if usuario_estado.fecha_primera_carga else None
     })
 
 if __name__ == '__main__':
