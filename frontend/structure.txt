@@ -12,6 +12,7 @@ project_root/
 │   │   ├── dashboard_factory.py
 │   │   ├── navbar.py
 │   │   ├── home_layout.py
+│   │   ├── home_callbacks.py
 │   │   ├── falabella/
 │   │   │   ├── __init__.py
 │   │   │   ├── layout.py
