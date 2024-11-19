@@ -50,28 +50,35 @@ def register_callbacks(app):
                 mov['total'] = f"{mov['total']:.2f}"
                 mov['cuota_cargada'] = "-" if mov['cuota_cargada'] == "NA" else mov['cuota_cargada']
 
-            response_change = requests.get(f"{BACKEND_ENDPOINT}/percentage-change", params={'userId': user_id})
-            response_change.raise_for_status()
-            data_change = response_change.json()
+            # Manejar el caso de un solo periodo
+            try:
+                response_change = requests.get(f"{BACKEND_ENDPOINT}/percentage-change", params={'userId': user_id})
+                response_change.raise_for_status()
+                data_change = response_change.json()
+                
+                change_total = data_change.get('change_total')
+                change_minimo = data_change.get('change_minimo')
+            except:
+                # Si hay error al obtener los cambios porcentuales, asumimos que es el primer periodo
+                change_total = None
+                change_minimo = None
 
-            change_total = data_change.get('change_total')
-            change_minimo = data_change.get('change_minimo')
-
+            # Manejo de visualización para cambios porcentuales
             if change_total is not None:
                 if change_total < 0:
-                    change_total_text = html.Span(f"▼{change_total:.2f}%", style={"color": "green"})
+                    change_total_text = html.Span(f"▼{abs(change_total):.2f}%", style={"color": "green"})
                 else:
                     change_total_text = html.Span(f"▲{change_total:.2f}%", style={"color": "red"})
             else:
-                change_total_text = "N/A"
+                change_total_text = html.Span("-", style={"color": "gray"})
 
             if change_minimo is not None:
                 if change_minimo < 0:
-                    change_minimo_text = html.Span(f"▼{change_minimo:.2f}%", style={"color": "green"})
+                    change_minimo_text = html.Span(f"▼{abs(change_minimo):.2f}%", style={"color": "green"})
                 else:
                     change_minimo_text = html.Span(f"▲{change_minimo:.2f}%", style={"color": "red"})
             else:
-                change_minimo_text = "N/A"
+                change_minimo_text = html.Span("-", style={"color": "gray"})
 
             periodo_facturacion = html.Span([
                 "Periodo de facturación: ",
@@ -92,14 +99,14 @@ def register_callbacks(app):
         except requests.exceptions.RequestException as e:
             error_text = html.Span("Error al cargar datos", style={"color": "red"})
             return (
-            "Error",
-            "Error",
-            "Error",
-            "Error",
-            [],
-            "Error al cargar datos",
-            error_text,
-            error_text
+                "Error",
+                "Error",
+                "Error",
+                "Error",
+                [],
+                error_text,
+                error_text,
+                error_text
             )
 
     @app.callback(
@@ -122,6 +129,7 @@ def register_callbacks(app):
 
             df = pd.DataFrame(data)
 
+            # Crear una figura incluso con un solo punto de datos
             figure = go.Figure(data=[
                 go.Scatter(
                     x=df['periodo'], 
@@ -131,6 +139,7 @@ def register_callbacks(app):
                 )
             ])
 
+            # Ajustar el layout para manejar un solo punto
             figure.update_layout(
                 xaxis_title="Periodo de Facturación",
                 yaxis_title="Pago Total (S/)",
@@ -147,7 +156,7 @@ def register_callbacks(app):
                     tickangle=45,
                     tickfont=dict(size=14),
                     tickformat='%m/%y',
-                    nticks=6
+                    nticks=len(df) if len(df) < 6 else 6  # Ajustar número de ticks según cantidad de datos
                 ),
                 yaxis=dict(
                     showgrid=True,
@@ -155,20 +164,27 @@ def register_callbacks(app):
                     linecolor='black',
                     tickformat=',.0f',
                     nticks=5,
-                    tickfont=dict(size=14)
+                    tickfont=dict(size=14),
+                    # Asegurar que el rango del eje y tenga un padding adecuado
+                    range=[
+                        min(df['pago_total_mes']) * 0.9 if len(df) > 0 else 0,
+                        max(df['pago_total_mes']) * 1.1 if len(df) > 0 else 1000
+                    ]
                 ),
-            )
-
-            # Ajustes específicos para dispositivos móviles
-            figure.update_layout(
-                autosize=True,
-                xaxis=dict(
-                    rangeselector=dict(visible=False),
-                    rangeslider=dict(visible=False)
-                )
             )
 
             return figure
 
         except requests.exceptions.RequestException as e:
-            return go.Figure()
+            # Retornar una figura vacía con mensaje de error
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Error al cargar datos",
+                xref="paper",
+                yref="paper",
+                x=0.5,
+                y=0.5,
+                showarrow=False,
+                font=dict(size=16, color="red")
+            )
+            return fig
