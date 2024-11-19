@@ -45,6 +45,34 @@ def create_no_documents_layout():
             ], md=6, className="mx-auto")
         ], className="justify-content-center")
     ], className="mt-5", fluid="md")
+    
+def create_no_banks_layout():
+    return dbc.Container([
+        html.H1("Bienvenido de vuelta a tu Centro Financiero", className="text-center mb-4"),
+        html.P("Actualmente no hay información disponible para mostrar", className="text-center mb-3"),
+        dbc.Row([
+            dbc.Col([
+                html.P([
+                    "Si no has cargado documento aún, ",
+                    html.A("ve a la sección de documentos", href="/dashboard/my-account/documents/", className="text-primary"),
+                    " y carga tus estados de cuenta."
+                ], className="text-center mb-3"),
+                dbc.Button("Ir a Documentos", href="/dashboard/my-account/documents/", 
+                           color="primary", className="w-100 mb-3")
+            ], md=8, className="mx-auto")
+        ], className="justify-content-center"),
+        dbc.Row([
+            dbc.Col([
+                html.P([
+                    "Si has deshabilitado el panel de tus tarjetas, ",
+                    html.A("ve a la sección de configuración", href="/dashboard/my-account/configuration/cards/", className="text-primary"),
+                    " y habilita las que desees visualizar."
+                ], className="text-center mb-3"),
+                dbc.Button("Ir a Configuración de Tarjetas", href="/dashboard/my-account/configuration/cards/", 
+                           color="secondary", className="w-100")
+            ], md=8, className="mx-auto")
+        ], className="justify-content-center")
+    ], className="mt-5", fluid="md")
 
 def create_default_layout():
     return dbc.Container([
