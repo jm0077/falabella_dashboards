@@ -172,6 +172,15 @@ def register_callbacks(app):
                     ]
                 ),
             )
+            
+            # Ajustes específicos para dispositivos móviles
+            figure.update_layout(
+                autosize=True,
+                xaxis=dict(
+                    rangeselector=dict(visible=False),
+                    rangeslider=dict(visible=False)
+                )
+            )
 
             return figure
 

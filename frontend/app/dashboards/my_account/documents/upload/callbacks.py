@@ -7,6 +7,7 @@ import dash_bootstrap_components as dbc
 from flask_login import current_user
 from google.cloud import storage
 import base64
+from datetime import datetime
 from config import CARDS_API_ENDPOINT, GCS_BUCKET_NAME
 
 def register_upload_callbacks(app):
@@ -106,15 +107,20 @@ def register_upload_callbacks(app):
             storage_client = storage.Client()
             bucket = storage_client.bucket(GCS_BUCKET_NAME)
 
+            # Generar el nombre del archivo con timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename_base, filename_ext = filename.rsplit('.', 1)
+            timestamped_filename = f"{filename_base}_{timestamp}.{filename_ext}"
+
             # Crear la ruta del archivo en el bucket
             user_id = current_user.id
-            file_path = f"{user_id}/{selected_bank}/Step0_Input/{filename}"
+            file_path = f"{user_id}/{selected_bank}/Step0_Input/{timestamped_filename}"
 
             # Subir el archivo al bucket
             blob = bucket.blob(file_path)
             blob.upload_from_string(decoded, content_type='application/pdf')
 
-            return None, None, None, "Documento cargado exitosamente.", True, "success", None  # Clear the selected file display
+            return None, None, None, "Documento cargado exitosamente.", True, "success", None
 
         except Exception as e:
             return None, no_update, no_update, f"Error al cargar el documento: {str(e)}", True, "danger", no_update
