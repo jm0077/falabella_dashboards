@@ -104,11 +104,11 @@ def register_home_callbacks(app):
         user_banks = get_user_banks(current_user.id)
         
         # Verificar si tiene bancos habilitados
-        banks_enabled = any(bank.get('habilitado', False) for bank in user_banks)
+        banks_enabled = any(bank.get('habilitado', True) for bank in user_banks)
         
         # Si no tiene bancos habilitados, mostrar layout para habilitar bancos
         if not banks_enabled:
             return create_no_banks_layout()
         
         # Si llega aquí, mostrar dashboard por defecto
-        return create_default_layout()
+        return create_default_layout(user_banks)

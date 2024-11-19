@@ -74,35 +74,60 @@ def create_no_banks_layout():
         ], className="justify-content-center")
     ], className="mt-5", fluid="md")
 
-def create_default_layout():
+def create_default_layout(user_banks):
+    """
+    Crea un layout predeterminado que muestra solo las tarjetas de bancos habilitados
+    
+    Args:
+        user_banks (list): Lista de bancos del usuario con su estado de habilitación
+    """
+    # Mapa de configuraciones de bancos
+    bank_configs = {
+        'falabella': {
+            'logo': "https://www.bancofalabella.pe/assets/logo.svg",
+            'href': "/dashboard/falabella/",
+            'color': "primary"
+        },
+        'scotiabank': {
+            'logo': "https://cdn.aglty.io/scotiabank-peru/Global-Rebrand/logo.svg", 
+            'href': "/dashboard/scotiabank/",
+            'color': "danger"
+        }
+    }
+
+    # Filtrar bancos habilitados
+    enabled_banks = [
+        bank for bank in user_banks
+        if bank.get('habilitado', True) and bank.get('banco_nombre', '').lower() in bank_configs
+    ]
+
+    # Crear columnas para bancos habilitados
+    bank_cols = []
+    for bank in enabled_banks:
+        bank_name = bank.get('banco_nombre', '').lower()
+        config = bank_configs[bank_name]
+        
+        bank_col = dbc.Col([
+            dbc.Card([
+                dbc.CardBody([
+                    html.Div([
+                        html.Img(src=config['logo'],
+                               className="img-fluid mb-3",
+                               style={'max-height': '60px'}),
+                    ], style={'height': '100px', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center'}),
+                    dbc.Button(f"Ir a {bank.get('banco_nombre', 'Banco')}", href=config['href'],
+                             color=config['color'], className="w-100")
+                ])
+            ], className="h-100")
+        ], md=6, className="mb-3 mb-md-0")
+        
+        bank_cols.append(bank_col)
+
+    # Si no hay bancos habilitados, mostrar mensaje
+    if not bank_cols:
+        return create_no_banks_layout()
+
     return dbc.Container([
         html.H1("Bienvenido de vuelta a tu Centro Financiero", className="text-center mb-4"),
-        dbc.Row([
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardBody([
-                        html.Div([
-                            html.Img(src="https://www.bancofalabella.pe/assets/logo.svg",
-                                   className="img-fluid mb-3",
-                                   style={'max-height': '60px'}),
-                        ], style={'height': '100px', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center'}),
-                        dbc.Button("Ir a Falabella", href="/dashboard/falabella/",
-                                 color="primary", className="w-100")
-                    ])
-                ], className="h-100")
-            ], md=6, className="mb-3 mb-md-0"),
-            dbc.Col([
-                dbc.Card([
-                    dbc.CardBody([
-                        html.Div([
-                            html.Img(src="https://cdn.aglty.io/scotiabank-peru/Global-Rebrand/logo.svg",
-                                   className="img-fluid mb-3",
-                                   style={'max-height': '60px'}),
-                        ], style={'height': '100px', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center'}),
-                        dbc.Button("Ir a Scotiabank", href="/dashboard/scotiabank/",
-                                 color="danger", className="w-100")
-                    ])
-                ], className="h-100")
-            ], md=6)
-        ], className="justify-content-center")
+        dbc.Row(bank_cols, className="justify-content-center")
     ], className="mt-5", fluid="md")
