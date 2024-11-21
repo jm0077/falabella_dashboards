@@ -10,6 +10,7 @@ class User(UserMixin):
         self.first_name = None
         self.last_name = None
         self.email = None
+        self.dni = None
         self.load_user_info()
 
     def load_user_info(self):
@@ -17,18 +18,21 @@ class User(UserMixin):
         self.first_name = userinfo.get('given_name')
         self.last_name = userinfo.get('family_name')
         self.email = userinfo.get('email')
+        self.dni = userinfo.get('dni')
 
     @staticmethod
     def get(user_id):
         return User(user_id)
 
-    def update(self, first_name=None, last_name=None, email=None):
+    def update(self, first_name=None, last_name=None, email=None, dni=None):
         if first_name:
             self.first_name = first_name
         if last_name:
             self.last_name = last_name
         if email:
             self.email = email
+        if dni:
+            self.dni = dni
 
         keycloak = current_app.config['keycloak']
         client_secrets = current_app.config.get('OIDC_CLIENT_SECRETS')
@@ -64,7 +68,10 @@ class User(UserMixin):
         user_data = {
             'firstName': self.first_name,
             'lastName': self.last_name,
-            'email': self.email
+            'email': self.email,
+            'attributes': {
+                'dni': [self.dni] if self.dni else []
+            }
         }
 
         admin_url = client_secrets['web']['issuer'].replace('/realms/master', '')
@@ -81,7 +88,8 @@ class User(UserMixin):
             'sub': self.id,
             'given_name': self.first_name,
             'family_name': self.last_name,
-            'email': self.email
+            'email': self.email,
+            'dni': self.dni
         }
 
         return True, "Información actualizada correctamente"

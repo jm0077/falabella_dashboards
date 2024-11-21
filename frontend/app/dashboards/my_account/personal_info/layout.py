@@ -11,6 +11,12 @@ def create_personal_info_layout():
                 dbc.Form([
                     dbc.Row([
                         dbc.Col([
+                            dbc.Label("DNI", html_for="dni"),
+                            dbc.Input(type="text", id="dni", placeholder="Ingresa tu número de documento"),
+                        ], width=12),
+                    ], className="mb-3"),
+                    dbc.Row([
+                        dbc.Col([
                             dbc.Label("Nombre", html_for="nombre"),
                             dbc.Input(type="text", id="nombre", placeholder="Ingresa tu nombre"),
                         ], width=12),
@@ -43,26 +49,28 @@ def create_personal_info_layout():
 
 def register_callbacks(app):
     @app.callback(
-        [Output("nombre", "value"),
+        [Output("dni", "value"),
+         Output("nombre", "value"),
          Output("apellido", "value"),
          Output("email", "value")],
         [Input("url", "pathname")]
     )
     def load_user_data(pathname):
         if pathname == "/dashboard/my-account/personal-info/" and current_user.is_authenticated:
-            return current_user.first_name, current_user.last_name, current_user.email
-        return "", "", ""
+            return current_user.dni, current_user.first_name, current_user.last_name, current_user.email
+        return "", "", "", ""
 
     @app.callback(
         Output("mensaje-resultado", "children"),
         [Input("guardar-datos", "n_clicks")],
-        [State("nombre", "value"),
+        [State("dni", "value"),
+         State("nombre", "value"),
          State("apellido", "value"),
          State("email", "value")]
     )
-    def update_user_data(n_clicks, nombre, apellido, email):
+    def update_user_data(n_clicks, dni, nombre, apellido, email):
         if n_clicks and current_user.is_authenticated:
-            success, message = current_user.update(first_name=nombre, last_name=apellido, email=email)
+            success, message = current_user.update(dni=dni, first_name=nombre, last_name=apellido, email=email)
             if success:
                 return dbc.Alert(message, color="success", dismissable=True)
             else:

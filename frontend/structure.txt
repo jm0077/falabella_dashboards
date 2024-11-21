@@ -44,7 +44,10 @@ project_root/
 │   │       │   ├── __init__.py
 │   │       │   ├── layout.py
 │   │       │   ├── callbacks.py
-│   │       │   └── upload/
+│   │       │   ├── upload/
+│   │       │   │   ├── layout.py
+│   │       │   │   └── callbacks.py
+│   │       │   └── download/
 │   │       │       ├── layout.py
 │   │       │       └── callbacks.py
 │   │       └── help_center/

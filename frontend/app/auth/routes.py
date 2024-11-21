@@ -38,6 +38,11 @@ def auth():
     user.first_name = userinfo.get('given_name')
     user.last_name = userinfo.get('family_name')
     user.email = userinfo.get('email')
+    # Debugging: Print out the full userinfo to see its structure
+    logging.info(f"Userinfo: {userinfo}")
+    # Extract DNI from user attributes
+    user.dni = userinfo.get('dni')
+    logging.info(f"DNI obtenido: {user.dni}")
     login_user(user)
 
     # Guardar información del usuario en la sesión
