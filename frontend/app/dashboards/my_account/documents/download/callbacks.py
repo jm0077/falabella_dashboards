@@ -13,6 +13,9 @@ import logging
 import os
 from google.oauth2 import service_account
 
+MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
 # Configuración del logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -98,21 +101,16 @@ def register_download_callbacks(app):
             if not pdf_files:
                 return [], None, True, "No se encontraron documentos para este banco.", True, "warning"
 
-            def extract_month_year(filename):
-                try:
-                    match = re.search(r'(\w+)-(\d{4})\.pdf', filename)
-                    if match:
-                        date_str = f"{match.group(1)} {match.group(2)}"
-                        date = datetime.strptime(date_str, "%B %Y")
-                        return date
-                    return datetime.min
-                except ValueError as e:
-                    logger.error(f"Error parsing date from filename {filename}: {str(e)}")
-                    return datetime.min
+            def extract_year_month(filename):
+                # Extrae el mes y año del nombre del archivo
+                match = re.search(r'(\w+)-(\d{4})\.pdf', filename)
+                if match:
+                    return (int(match.group(2)), MONTHS.index(match.group(1)) + 1)
+                return (0, 0)
 
             sorted_files = sorted(
                 pdf_files,
-                key=lambda x: extract_month_year(x.name.split('/')[-1]),
+                key=lambda x: extract_year_month(x.name.split('/')[-1]),
                 reverse=True
             )
 
@@ -158,16 +156,9 @@ def register_download_callbacks(app):
 
             # Descargar el contenido del blob
             document_content = blob.download_as_bytes()
-            
+
             # Obtener el nombre del archivo
             filename = selected_document.split('/')[-1]
-            
-            #signed_url = blob.generate_signed_url(
-            #    version='v4',
-            #    expiration=timedelta(minutes=15),
-            #    method='GET',
-            #    response_disposition=f'attachment; filename="{selected_document.split("/")[-1]}"'
-            #)
 
             logger.info(f"Successfully prepared document for download: {filename}")
             return "Descarga iniciada...", True, "success", dcc.send_bytes(document_content, filename)
