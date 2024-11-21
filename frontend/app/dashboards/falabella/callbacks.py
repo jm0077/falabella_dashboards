@@ -9,6 +9,8 @@ from config import BACKEND_ENDPOINT
 def register_callbacks(app):
     @app.callback(
         [
+            Output('dashboard-content', 'style'),
+            Output('empty-state-container', 'style'),
             Output('pago-total-mes-falabella', 'children'),
             Output('pago-minimo-mes-falabella', 'children'),
             Output('fecha-maxima-pago-falabella', 'children'),
@@ -27,12 +29,15 @@ def register_callbacks(app):
         
         user_id = session.get('user_id')
         if not user_id:
-            return ("Error", "Error", "Error", "Error", [], "Error: No user ID", "Error", "Error")
+            return show_empty_state()
         
         try:
             response_period = requests.get(f"{BACKEND_ENDPOINT}/latest-period-data", params={'userId': user_id})
             response_period.raise_for_status()
             data_period = response_period.json()
+
+            if not data_period or not data_period.get('movimientos'):
+                return show_empty_state()
 
             pago_total_mes = f"S/ {data_period['pago_total_mes']:.2f}"
             pago_minimo_mes = f"S/ {data_period['pago_minimo_mes']:.2f}"
@@ -86,6 +91,8 @@ def register_callbacks(app):
             ])
 
             return (
+                {'display': 'block'},  # Mostrar dashboard
+                {'display': 'none'},   # Ocultar mensaje vacío
                 pago_total_mes,
                 pago_minimo_mes,
                 fecha_maxima_pago,
@@ -93,21 +100,26 @@ def register_callbacks(app):
                 movimientos,
                 periodo_facturacion,
                 change_total_text,
-                change_minimo_text
+                change_minimo_text,
             )
 
         except requests.exceptions.RequestException as e:
-            error_text = html.Span("Error al cargar datos", style={"color": "red"})
-            return (
-                "Error",
-                "Error",
-                "Error",
-                "Error",
-                [],
-                error_text,
-                error_text,
-                error_text
-            )
+            return show_empty_state()
+
+    def show_empty_state():
+        """Helper function to return empty state values"""
+        return (
+            {'display': 'none'},    # Ocultar dashboard
+            {'display': 'block'},   # Mostrar mensaje vacío
+            "",                     # pago_total_mes
+            "",                     # pago_minimo_mes
+            "",                     # fecha_maxima_pago
+            "",                     # linea_disponible
+            [],                     # movimientos
+            "",                     # periodo_facturacion
+            "",                     # pago_total_comparison
+            "",                     # pago_minimo_comparison
+        )
 
     @app.callback(
         Output('consumption-graph-falabella', 'figure'),
