@@ -29,4 +29,4 @@ CLIENT_SCOPE = 'manage-users'
 CARDS_API_ENDPOINT = "https://backend-tarjetas-service-913912993840.southamerica-west1.run.app/api"
 
 # Configuración del bucket de GCS
-GCS_BUCKET_NAME = 'account-statements_customers'
+GCS_BUCKET_NAME = 'account-statements-customers-northern-hope-449920-t0'

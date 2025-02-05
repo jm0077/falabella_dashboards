@@ -1,51 +1,61 @@
 options:
   logging: CLOUD_LOGGING_ONLY
+
 steps:
 # Paso 1: Construir el microservicio "backend-tarjetas"
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/northern-hope-449920-t0/backend-tarjetas-app', '.']
+  args: ['build', '-t', 'gcr.io/{PROJECT_ID}/backend-tarjetas-app', '.']
   dir: './backend_tarjetas'
+
 # Paso 2: Subir la imagen de "backend-tarjetas" al Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/northern-hope-449920-t0/backend-tarjetas-app']
+  args: ['push', 'gcr.io/{PROJECT_ID}/backend-tarjetas-app']
+
 # Paso 3: Desplegar el microservicio "backend-tarjetas"
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', 'backend-tarjetas-service', 
-         '--image', 'gcr.io/northern-hope-449920-t0/backend-tarjetas-app', 
-         '--add-cloudsql-instances', 'northern-hope-449920-t0:southamerica-west1:my-mysql-instance', 
+         '--image', 'gcr.io/{PROJECT_ID}/backend-tarjetas-app', 
+         '--add-cloudsql-instances', '{PROJECT_ID}:southamerica-west1:my-mysql-instance', 
          '--platform', 'managed', 
          '--region', 'southamerica-west1', 
          '--allow-unauthenticated']
+
 # Paso 4: Construir el microservicio "backend-falabella"
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/northern-hope-449920-t0/backend-falabella-app', '.']
+  args: ['build', '-t', 'gcr.io/{PROJECT_ID}/backend-falabella-app', '.']
   dir: './backend_falabella'
+
 # Paso 5: Subir la imagen de "backend-falabella" al Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/northern-hope-449920-t0/backend-falabella-app']
+  args: ['push', 'gcr.io/{PROJECT_ID}/backend-falabella-app']
+
 # Paso 6: Desplegar el microservicio "backend-falabella"
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', 'backend-falabella-app-service', 
-         '--image', 'gcr.io/northern-hope-449920-t0/backend-falabella-app', 
-         '--add-cloudsql-instances', 'northern-hope-449920-t0:southamerica-west1:my-mysql-instance', 
+         '--image', 'gcr.io/{PROJECT_ID}/backend-falabella-app', 
+         '--add-cloudsql-instances', '{PROJECT_ID}:southamerica-west1:my-mysql-instance', 
          '--platform', 'managed', 
          '--region', 'southamerica-west1', 
          '--allow-unauthenticated']
+
 # Paso 7: Construir el microservicio "multi-dashboard"
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/northern-hope-449920-t0/multi-dashboard-app', '.']
+  args: ['build', '-t', 'gcr.io/{PROJECT_ID}/multi-dashboard-app', '.']
   dir: './frontend'
+
 # Paso 8: Subir la imagen de "multi-dashboard" al Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/northern-hope-449920-t0/multi-dashboard-app']
+  args: ['push', 'gcr.io/{PROJECT_ID}/multi-dashboard-app']
+
 # Paso 9: Desplegar el microservicio "multi-dashboard"
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', 'multi-dashboard-app-service', 
-         '--image', 'gcr.io/northern-hope-449920-t0/multi-dashboard-app', 
+         '--image', 'gcr.io/{PROJECT_ID}/multi-dashboard-app', 
          '--platform', 'managed', 
          '--region', 'southamerica-west1', 
          '--allow-unauthenticated']
+
 images:
-- 'gcr.io/northern-hope-449920-t0/backend-tarjetas-app'
-- 'gcr.io/northern-hope-449920-t0/backend-falabella-app'
-- 'gcr.io/northern-hope-449920-t0/multi-dashboard-app'
+- 'gcr.io/{PROJECT_ID}/backend-tarjetas-app'
+- 'gcr.io/{PROJECT_ID}/backend-falabella-app'
+- 'gcr.io/{PROJECT_ID}/multi-dashboard-app'
