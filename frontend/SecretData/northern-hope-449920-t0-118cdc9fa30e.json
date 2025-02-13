@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "northern-hope-449920-t0",
+  "private_key_id": "118cdc9fa30e50cccd28f9ba00f100a9ee92943a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC0+X6gejvE8esi\nsJ2hegQ0eDMJV4MaEmFXB8ck+Sw0nAajMKeQtUaDGtB/eJ6bIB4Im0RusyfFZxkN\nP8XaEneZWP21vQ+oYlQgBpFzcfZTov0AWXBc+D7SEq59uA1wJvWNqgtmEY4h4Z5W\nUjnTT3Kt5tyUcjw91G18ZShBQpwVAjGrmJ+/ZPwpvFCFH/xpxRwKmiAf+2mPNRjR\nM8FOot8qa0w85STmTUKGw3F0kDw/G7oDxiMv6hDnwLJJHKfGPdEzA98BscK23UTa\nTGIbmpFKMszsWAzZnsx3i88uA8k3b40doiin72DCMrqdrQfJHZFzgO2YQpLClSu5\nzvXkAxYjAgMBAAECggEAMszgNzLoqTGRZBT4wpWqLYJaLTKkCgMD0PbNd3r8Zi4w\nDMoBF3VTPEUgJtAYkYnz9E2FaZ+ft+FnXlk69Cp/6QtaeJQAG6+yVqURWjswvqx/\nYYQ5rtc+ZyC4W3D5ULSW9DO57GZcI/WdyTReqArisZ8e5wqkD2UccLFCmgMVJi4U\nrHE2itkvUckaj179QdIcEuwMfAiomsgeqXX88pnF1eoJqlShSFtRMu/8HEAaCrP1\n8LEMrRrqiVAI18MfQE/Jmf/Wft+ym2r667G+armSbN5IjNz2cjhrKUvxvGgxbw33\ntFbJcaHQdyGvz3u08kQO3kv00kuJqd533SIkwn1R1QKBgQDrGqr++erd5JWubo2d\n6iirKq/6sSvLjGjIlCXxhIpKDJVbugGJOltOUGJniqUYg/VGS8XR7ZN0WfOo9wxb\n4ycYEXcPd5G0bCPHon69i8o7MslNZKNDdvkXY3k1smrytqPtIIBeXIUPmp/ozg6z\n1qyAkhJitROLSJYbqVWsVoxnbQKBgQDFDzb2wzZqg7zgRVIh7RZyvSpawbKkkOix\n/PaRGRejGWX6zcPrpTObfxCrAWX2XJYKOo7yuIJTYcxsBTqJjiy31wEo7I4fS5YM\nUUtngdJdq1xerhlyzmtTYVvi1aAlVskKPN94lvlR+7riNxottQSK5Tgk+rXL2V9l\n2KFIUbcpzwKBgQDGEYCQMaLyb/q+qvr6WGUM13jM/miEIvXATjetQtlyyyklzw4u\nO5Di6IwO6VpvzfRc1ceCNeItev7xkbjCzRuJhmVFDZoeY6C9NqQKMnQc7Yt0fV2i\nn9/5GV/rojXB56cxRll/pfigDce8zaTLVAeehfGhYSZnCK8V/NJlz8CX/QJ/Enla\nrcefUl0HV/8ntAaGFDunvNpr5QGwzv7oHrI7hQ7cgKbJt03FiM5gwadf57jGWC8l\nN5wUm7yPbZEP69VoW9PMSAnlSQnNB1qXtxx0nFN0VWv89sZjSW3XL2zXlqiMMGmE\nicmdlhIDczG3QpG120+h89WNNY8rYmDsvdrrUQKBgEdeRwEO10MEA0Nq75Pcan0B\nF9PBGoBPUNl8XV8IlPtUH1P4n+3JgqDfKf/qD1ManSs7H8905mMOuxcZATfyIG2d\na2c0ndTCg9AszM2buNk9+9xs2q9VzJQvMfLeUNL52yCEu5+Xa6OjIRMFa1eoe3Za\n5s6aPlxmlYokf3RNYotz\n-----END PRIVATE KEY-----\n",
+  "client_email": "terraform-service-account@northern-hope-449920-t0.iam.gserviceaccount.com",
+  "client_id": "111105681802478499925",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/terraform-service-account%40northern-hope-449920-t0.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

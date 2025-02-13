@@ -6,7 +6,7 @@ import requests
 from flask_login import current_user
 from google.cloud import storage
 import dash_bootstrap_components as dbc
-from config import CARDS_API_ENDPOINT, GCS_BUCKET_NAME
+from config import CARDS_API_ENDPOINT, GCS_BUCKET_NAME, GCS_CREDENTIALS
 import re
 from datetime import datetime, timedelta
 import logging
@@ -20,13 +20,8 @@ MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Credenciales para la cuenta de servicio
-creds = service_account.Credentials.from_service_account_file(
-    'SecretData/quick-bonfire-441017-v2-20ceb2642aa5.json'
-)
-
 # Crea el cliente de Storage con las credenciales
-storage_client = storage.Client(credentials=creds)
+storage_client = storage.Client(credentials=GCS_CREDENTIALS)
 
 
 def register_download_callbacks(app):

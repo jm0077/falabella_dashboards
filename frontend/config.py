@@ -1,6 +1,7 @@
 import os
 import secrets
 import dash_bootstrap_components as dbc
+from google.oauth2 import service_account
 
 BACKEND_ENDPOINT = "https://backend-falabella-app-service-858802136733.southamerica-west1.run.app/api"
 FLASK_SECRET_KEY = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(24))
@@ -30,3 +31,6 @@ CARDS_API_ENDPOINT = "https://backend-tarjetas-service-858802136733.southamerica
 
 # Configuración del bucket de GCS
 GCS_BUCKET_NAME = 'account-statements-customers-northern-hope-449920-t0'
+# Ruta al archivo de credenciales de servicio
+GCS_SERVICE_ACCOUNT_FILE = os.path.join(os.path.dirname(__file__), 'SecretData', 'northern-hope-449920-t0-118cdc9fa30e.json')
+GCS_CREDENTIALS = service_account.Credentials.from_service_account_file(GCS_SERVICE_ACCOUNT_FILE)
